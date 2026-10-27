@@ -1,0 +1,4 @@
+# fetched device specs and probe output stay local (they're the vendor's text / your device's data)
+snapshots/
+.env
+__pycache__/
