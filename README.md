@@ -21,7 +21,7 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [docs/PRIVACY.md](docs/PRIVACY.md) | what the device keeps about your chats, and what you can delete through the API |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
 
-See also: [AntAttack's documentation map](https://github.com/garcianet-alt/AI_Articles/tree/main/Tiiny),
+See also: [AntAttack's documentation map](https://github.com/garciacionet-alt/AI_Articles/tree/main/Tiiny),
 which covers where Tiiny's own documentation lives and how API-call logging works.
 
 ## Checking your own device
