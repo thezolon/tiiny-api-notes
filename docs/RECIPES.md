@@ -37,6 +37,10 @@ curl -X POST -H "Authorization: Bearer $KEY" $TIINY/api/v1/sys/shutdown/
 Keep the trailing slash. It answers `{"status":"ok", …}` and switches off a few seconds later; press the power
 button to turn it back on. `POST /api/v1/sys/reboot/` restarts.
 
+> **Known issue (TiinyOS 0.1.36):** power off doesn't work on the current version, from this call or from the
+> TiinyOS app. The reply is still `{"status":"ok", …}`, but the Tiiny stays on. Tiiny AI has acknowledged it and
+> says it will be fixed in an update. Until then, use the power button.
+
 Windows PowerShell:
 
 ```powershell
