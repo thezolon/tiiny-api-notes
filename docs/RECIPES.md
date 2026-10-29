@@ -47,6 +47,34 @@ Windows PowerShell:
 Invoke-RestMethod -Method Post -Headers @{Authorization="Bearer YOUR_KEY"} "http://192.168.1.50/api/v1/sys/shutdown/"
 ```
 
+## OCR (read text from an image)
+
+**PP-OCRv6** (Small or Medium) works through the normal API on any connection, USB included:
+
+```bash
+curl -X POST -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+  "$TIINY/v1/ocr?model=PaddlePaddle%2FPP-OCRv6-Small" \
+  -d '{"input": "data:image/png;base64,BASE64_OF_YOUR_IMAGE", "response_format": "json"}'
+```
+
+The text is in `data[0].text`.
+
+**GLM-OCR** doesn't work through the API on TiinyOS 0.1.36 (`/v1/ocr` answers 404, chat answers 400), but the
+model works on its own port. Over Wi-Fi/LAN only (the USB link blocks model ports), no key needed:
+
+1. Load GLM-OCR, then find its port (it changes on every load):
+   ```bash
+   curl -H "Authorization: Bearer $KEY" $TIINY/api/v1/models/running   # "model_id": "zai-org/GLM-OCR" -> "port"
+   ```
+2. Send the image with the prompt `Text Recognition:`:
+   ```bash
+   curl http://192.168.1.50:PORT/v1/chat/completions -H "Content-Type: application/json" -d '{"model": "zai-org/GLM-OCR",
+     "max_tokens": 1000, "messages": [{"role": "user", "content": [
+       {"type": "image_url", "image_url": {"url": "data:image/png;base64,BASE64_OF_YOUR_IMAGE"}},
+       {"type": "text", "text": "Text Recognition:"}]}]}'
+   ```
+   The text is in `choices[0].message.content`. While GLM-OCR is loaded, anyone on your network can use that port.
+
 ## Chat (OpenAI style)
 
 ```bash

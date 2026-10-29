@@ -100,7 +100,7 @@ The **device handles one request at a time**; parallel requests to different mod
 | POST | `/v1/image/generate/stream` | image generation with progress | **app** |
 | POST | `/v1/audio/speech` | voice clone: `model, input, ref_audio` (base64 WAV), `ref_text` (both required), `language, instruct, response_format wav\|pcm\|mp3`. The Base model only clones | **tested** |
 | POST | `/v1/audio/transcriptions` | multipart `model, file, language`; json/text only. Resample 48 kHz stereo to 16 kHz mono first | **tested** |
-| POST | `/v1/ocr?model=<id>` | `{"input": data URI, "response_format": "json"}` → `data[0].text` + lines. PP-OCRv6 works; GLM-OCR isn't routed (use its own port's chat API) | **tested** |
+| POST | `/v1/ocr?model=<id>` | `{"input": data URI, "response_format": "json"}` → `data[0].text` + lines. PP-OCRv6 Small/Medium work (100% on the test image, 0.1.36). **GLM-OCR doesn't work through the API on 0.1.36**: here it answers 404 `Endpoint not found`, and `/v1/chat/completions` answers 400 `does not support chat`. It works on its own port (see Model containers) | **tested** |
 | GET/POST | `/v1/music/info`, `/v1/music/sessions`, `/v1/music/generate[/wav\|/preview\|/resume]`, `/v1/music/sessions/{id}/download?format=mp3` | music (Foundation-1 loops via `/generate/wav` with `{model, prompt, config}`; SongGeneration via `/generate/preview` + `/resume`) | **tested** |
 | GET/POST | `/v1/3d/capabilities`, `/v1/3d/tasks`, `/v1/3d/tasks/{id}`, `/v1/3d/tasks/{id}/cancel` | Hunyuan3D stages: multipart `stage` (shape, simplify, texture, export), `params` JSON, files `image/mesh/material` | **tested** |
 | — | `/v1/video/*` | reserved by the gateway; no video models yet | — |
@@ -109,9 +109,9 @@ The **device handles one request at a time**; parallel requests to different mod
 
 | method | path | what | mark |
 |---|---|---|---|
-| POST | `/v1/messages` | Anthropic Messages API (on `anthropic.api.tiiny` or the IP) | **docs** |
+| POST | `/v1/messages` | Anthropic Messages API (on `anthropic.api.tiiny` or the IP) | **tested** |
 | GET | `/v1/models` | model list in Anthropic format | probed |
-| POST | `/api/chat` | Ollama chat | **docs** |
+| POST | `/api/chat` | Ollama chat (`"stream": false`, `"think": false` work) | **tested** |
 | GET | `/api/tags` | Ollama model list (all installed models) | **tested** |
 
 ## Model containers (direct, Wi-Fi/LAN only, no auth)
@@ -124,7 +124,7 @@ Port from `GET /api/v1/models/running`; changes on every load. Blocked over USB.
 | Foundation-1 | `POST :port/v1/generate/wav {"prompt", "config": {seconds_total, steps, cfg_scale, seed}}` → WAV; has `/openapi.json` |
 | SongGeneration-v2 | `POST :port/v1/generate {"config": {caption, lyrics, generation_type: mixed\|bgm\|vocal\|separate, seconds_total, seed, steps, temperature, top_k, top_p}}` → `audio_data` (48 kHz); only `config` at the top level |
 | Hunyuan3D-2.1 | `POST :port/v1/tasks` (multipart, as `/v1/3d/tasks`); `GET :port/v1/tasks/{id}` |
-| GLM-OCR | `POST :port/v1/chat/completions` with the image and the text `Text Recognition:` |
+| GLM-OCR | `POST :port/v1/chat/completions` with the image and the text `Text Recognition:` (100% on the test image, 0.1.36; the only working route for GLM-OCR) |
 
 ## Knowledge base / vault (`/kb`)
 
@@ -251,3 +251,28 @@ From Tiiny's docs (**docs**), not tested here.
   Docker's `172.17.x.x` (move Docker's `bip` if a container can't reach it).
 - Hunyuan3D `background` stage fails (BriefNet missing); SongGeneration style reference fails.
 - Plain `/v1/music/generate` fails for SongGeneration ("Session not found"); `/resume` ignores `seconds_total`.
+- 0.1.36: GLM-OCR isn't reachable through the API at all (`/v1/ocr` 404, chat 400); use its own port over Wi-Fi/LAN,
+  or PP-OCRv6 through `/v1/ocr`.
+- 0.1.36: power off (`/api/v1/sys/shutdown/`) answers `ok` but the device stays on; Tiiny has acknowledged it.
+- With the NPU nearly full, `unload_candidate` can say a model fits (e.g. 55% needed, 56% free) while the load never
+  starts. Unload other models first (`/api/v1/models/unload_all`), then launch.
+- Streaming chat: the last chunk before `[DONE]` can carry `usage` with an empty `choices` list; don't index
+  `choices[0]` blindly.
+
+## Test run (2026-10-28, TiinyOS 0.1.36, device services 0.1.30)
+
+With [tools/api_test.py](../tools/api_test.py), over USB and Wi-Fi:
+
+| section | result |
+|---|---|
+| chat (Qwen3.6-35B-A3B): plain, streaming, tool calls, vision, Anthropic `/v1/messages`, Ollama `/api/chat` | all work |
+| embeddings (Qwen3-Embedding-0.6B) | works (1024 dims) |
+| OCR: PP-OCRv6 Small / Medium via `/v1/ocr` | work, 100% |
+| OCR: GLM-OCR via `/v1/ocr` / via chat | **broken** (404 / 400) |
+| OCR: GLM-OCR on its own port (Wi-Fi/LAN) | works, 100% |
+| image (Z-Image-Turbo, 512x512) | works |
+| voice clone (Qwen3-TTS Base) / transcription (Qwen3-ASR) | work (ASR 98% match) |
+| music loop (Foundation-1) | works |
+| 3D shape (Hunyuan3D-2.1) | works (~7 min) |
+| power off | **broken** (see above) |
+

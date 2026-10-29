@@ -20,6 +20,7 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [docs/RECIPES.md](docs/RECIPES.md) | copy-paste: power off, vault file flow, delete captured chats, use the Tiiny from Hermes / Cline / OpenAI SDKs |
 | [docs/MODELS.md](docs/MODELS.md) | every model in the Tiiny Model Store: type, size, NPU share, context, what it can do |
 | [docs/PRIVACY.md](docs/PRIVACY.md) | what the device keeps about your chats, and what you can delete through the API |
+| [tools/api_test.py](tools/api_test.py) | walk through the API and check each feature really works (chat, embeddings, OCR, images, voice, music, 3D); run one section or all |
 | [tools/model_list.py](tools/model_list.py) | regenerate docs/MODELS.md from your device's Model Store catalogue |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
 
@@ -33,6 +34,18 @@ export TIINY_URL=http://192.168.1.50 TIINY_KEY=your-api-key   # TiinyOS → Sett
 python tools/api_snapshot.py            # first run saves a baseline in snapshots/ (not committed)
 python tools/api_snapshot.py --check    # later: what changed?
 ```
+
+Something not working? Test just that part, or everything:
+
+```bash
+python tools/api_test.py ocr             # one section: info chat embeddings ocr image audio music 3d
+python tools/api_test.py                 # full run (loads ~10 models in turn; 20-40 minutes)
+python tools/api_test.py --list          # every check and the model it uses
+```
+
+It loads the models it needs (and puts back what was loaded before), checks each answer against known inputs in
+`tools/assets/`, and prints PASS/FAIL/SKIP per check; a report and the outputs land in `snapshots/`.
+Don't use the Tiiny for anything else while it runs.
 
 Python 3.10+, standard library only. The key is only sent to the address you give.
 
