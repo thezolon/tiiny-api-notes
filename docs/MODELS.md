@@ -1,12 +1,12 @@
 # Models in the Tiiny Model Store
 
-All 73 models the Model Store offered on 2026-10-27, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
+All 82 models the Model Store offered on 2026-10-29, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
 
 - **NPU** = share of the Tiiny's NPU memory the model takes when loaded. Models that add up to more than 100% can't be loaded together; TiinyOS (or the API's `unload_candidate`) tells you what has to go.
 - **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens.
 - Use any loaded chat model from other apps with the model name `default` (see [RECIPES.md](RECIPES.md)).
 
-## Chat with vision (15)
+## Chat with vision (17)
 
 | model | params | NPU | size | context | can do |
 |---|---|---|---|---|---|
@@ -15,14 +15,16 @@ All 73 models the Model Store offered on 2026-10-27, read from the device's own 
 | `Qwen/Qwen3.5-9B` | 9B | 29% | 6.2 GB | 128K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.5-35B-A3B` | 35B | 45% | 16.9 GB | 128K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.6-35B-A3B-Turbo` | 35B | 46% | 17.7 GB | 256K | Vision, Reasoning, Tool Use |
+| `Qwen/Qwen3.6-35B-A3B` | 35B | 47% | 17.4 GB | 256K | Vision, Reasoning, Tool Use |
+| `InternScience/Sage-A1.5-Turbo` | 35B | 48% | 17.5 GB | 256K | Vision, Reasoning |
 | `Qwen/Qwen3.6-27B` | 27B | 48% | 15.6 GB | 128K | Vision, Reasoning, Tool Use |
+| `huihui-ai/Huihui-Ornith-1.5-35B-A3B-abliterated-Turbo` | 35B | 48% | 17.5 GB | 256K | Vision, Reasoning, Tool Use |
 | `deepreinforce-ai/Ornith-1.0-35B` | 35B | 50% | 18.0 GB | 128K | Vision, Reasoning, Tool Use |
-| `google/gemma-4-31B-it` | 31B | 51% | 16.7 GB | 128K | Vision, Reasoning, Tool Use |
-| `Qwen/Qwen3.8-27B` | 27B | 52% | 15.9 GB | 256K | Vision, Reasoning, Tool Use |
+| `Qwen/Qwen3.8-27B` | 27B | 51% | 15.4 GB | 256K | Vision, Reasoning, Tool Use |
+| `google/gemma-4-31B-it` | 31B | 53% | 17.7 GB | 128K | Vision, Reasoning, Tool Use |
 | `endless-frontier/BigBang-v1-Turbo` | 36B | 54% | 17.9 GB | 128K | Vision, Thinking (toggle) |
-| `ornith-ai/Ornith-1.5-35B-A3B-Turbo` | 35B | 54% | 17.9 GB | 128K | Vision, Thinking |
+| `ornith-ai/Ornith-1.5-35B-A3B-Turbo` | 35B | 54% | 17.6 GB | 256K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.6-27B-Turbo` | 27B | 55% | 15.7 GB | 128K | Vision, Reasoning, Tool Use |
-| `Qwen/Qwen3.6-35B-A3B` | 35B | 55% | 17.6 GB | 128K | Vision, Reasoning, Tool Use |
 | `trohrbaugh/Qwen3.8-27B-heretic-ara-Turbo` | 27B | 56% | 15.9 GB | 128K | Vision, Reasoning, Tool Use |
 | `google/gemma-4-26B-A4B-it` | 26B | 78% | 13.4 GB | 128K | Reasoning, Tool Use |
 
@@ -42,10 +44,11 @@ All 73 models the Model Store offered on 2026-10-27, read from the device's own 
 | `Qwen/Qwen3-Coder-Next` | 80B | 94% | 37.7 GB | 128K | Tool Use |
 | `openai/gpt-oss-120b` | 120B | 100% | 67.3 GB | 128K | Reasoning, Tool Use |
 
-## Image creation and editing (13)
+## Image creation and editing (14)
 
 | model | params | NPU | size | context | can do |
 |---|---|---|---|---|---|
+| `abenzerps/Qwen-Image-2.1-Uncensored-Quantized` | 7B | 0% | 15.6 GB |  | Image Editing |
 | `TaoBaiBai2025/Z-Image-Turbo-Creating-Realistic` | 10B | 26% | 10.2 GB |  |  |
 | `Tongyi-MAI/Z-Image-Turbo` | 10B | 26% | 10.2 GB |  |  |
 | `Tongyi-MAI/Z-Image-Turbo-Children-Drawing` | 10B | 26% | 10.2 GB |  |  |
@@ -80,20 +83,25 @@ All 73 models the Model Store offered on 2026-10-27, read from the device's own 
 | `FunAudioLLM/Fun-ASR-Nano` | 1B | 7% | 2.6 GB |  |  |
 | `Qwen/Qwen3-ASR-1.7B` | 1.7B | 7% | 4.1 GB |  |  |
 
-## Text to speech (4)
+## Text to speech (8)
 
 | model | params | NPU | size | context | can do |
 |---|---|---|---|---|---|
-| `Supertone/supertonic-3` | 0.1B | 0% | 1.0 GB |  | Custom Voice |
+| `OpenMOSS-Team/MOSS-TTS-Nano-100M` | 0.1B | 0% | 0.3 GB |  | Voice Clone |
+| `Supertone/supertonic-3` | 0.1B | 0% | 0.2 GB |  | Custom Voice |
+| `hexgrad/Kokoro-82M` | 82M | 0% | 0.2 GB |  | Custom Voice |
+| `microsoft/VibeVoice-Realtime-0.5B` | 0.5B | 2% | 1.1 GB |  | Custom Voice |
 | `Qwen/Qwen3-TTS-12Hz-1.7B-Base` | 1.7B | 5% | 2.5 GB |  | Voice Clone |
 | `Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign` | 1.7B | 5% | 2.4 GB |  | Voice Design |
 | `Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice` | 1.7B | 7% | 2.4 GB |  | Custom Voice |
+| `microsoft/VibeVoice-1.5B` | 1.5B | 8% | 3.8 GB |  | Voice Clone, Multi-Speaker Dialogue |
 
-## Music (4)
+## Music (5)
 
 | model | params | NPU | size | context | can do |
 |---|---|---|---|---|---|
 | `RoyalCities/Foundation-1` | 2B | 5% | 1.4 GB |  |  |
+| `m-a-p/YuE2-3B` | 3B | 14% | 5.4 GB |  |  |
 | `tencent/SongGeneration-v2-large` | 4B | 28% | 6.9 GB |  |  |
 | `ACE-Step/AceStep-XL-Base` | 5B | 40% | 11.5 GB |  |  |
 | `ACE-Step/AceStep-XL-Turbo` | 5B | 40% | 11.8 GB |  |  |
@@ -104,6 +112,12 @@ All 73 models the Model Store offered on 2026-10-27, read from the device's own 
 |---|---|---|---|---|---|
 | `microsoft/TRELLIS.2-4B` | 4B | 6% | 9.8 GB |  |  |
 | `Tencent/Hunyuan3d-2.1` | 5.3B | 22% | 10.6 GB |  |  |
+
+## Video (1)
+
+| model | params | NPU | size | context | can do |
+|---|---|---|---|---|---|
+| `lightx2v/MiniMax-H3-Turbo` | 33B | 49% | 48.9 GB |  |  |
 
 ## Embeddings (for search and the vault) (8)
 

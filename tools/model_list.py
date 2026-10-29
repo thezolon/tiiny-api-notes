@@ -25,6 +25,7 @@ GROUPS = [
     ("Text to speech", ["Text-to-Speech"]),
     ("Music", ["Music Generation"]),
     ("3D", ["Image-to-3D"]),
+    ("Video", ["Text-to-Video", "Image-to-Video"]),
     ("Embeddings (for search and the vault)", ["Text Embedding"]),
     ("Rerankers", ["Text Reranking"]),
 ]
