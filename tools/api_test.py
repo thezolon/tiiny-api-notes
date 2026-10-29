@@ -345,11 +345,19 @@ def check_image(t, out):
     return f"{w}x{h} PNG{' (2nd try)' if attempt == 2 else ''}"
 
 
+def ref_voice():
+    wav, txt = ASSETS / "ref-voice.wav", ASSETS / "ref-voice.txt"
+    if not (wav.exists() and txt.exists()):
+        raise Skip("needs tools/assets/ref-voice.wav (a few seconds of speech) and ref-voice.txt (what it says)")
+    return wav, txt
+
+
 def check_tts(t, out):
+    wav_in, txt = ref_voice()
     t.load(MODELS["tts"])
     body = {"model": MODELS["tts"], "input": "This is the Tiiny API test, speaking in a cloned voice.",
-            "ref_audio": base64.b64encode((ASSETS / "ref-voice.wav").read_bytes()).decode(),
-            "ref_text": (ASSETS / "ref-voice.txt").read_text().strip(), "language": "en", "response_format": "wav"}
+            "ref_audio": base64.b64encode(wav_in.read_bytes()).decode(),
+            "ref_text": txt.read_text().strip(), "language": "en", "response_format": "wav"}
     wav = t.ok("POST", "/v1/audio/speech", body, raw=True, timeout=600)
     secs = wav_seconds(wav)
     (out / "speech.wav").write_bytes(wav)
@@ -357,13 +365,14 @@ def check_tts(t, out):
 
 
 def check_asr(t, out):
+    wav_in, txt = ref_voice()
     t.load(MODELS["asr"])
-    audio = to_16k_mono((ASSETS / "ref-voice.wav").read_bytes())
+    audio = to_16k_mono(wav_in.read_bytes())
     body, ctype = multipart({"model": MODELS["asr"], "language": "en", "response_format": "json"},
                             {"file": ("ref-voice.wav", audio, "audio/wav")})
     res = t.ok("POST", "/v1/audio/transcriptions", body, ctype=ctype, timeout=300)
     text = res.get("text", "") if isinstance(res, dict) else str(res)
-    score = similarity(text, (ASSETS / "ref-voice.txt").read_text())
+    score = similarity(text, txt.read_text())
     if score < 0.8:
         raise Fail(f"match {score:.0%}: {text[:80]!r}")
     return f"match {score:.0%}"
