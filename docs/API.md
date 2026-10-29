@@ -1,6 +1,6 @@
 # Tiiny device API reference
 
-Everything the Tiiny Pocket (z01) answers on the network, in one place. **Unofficial.** First collected
+Everything the Tiiny Pocket answers on the network, in one place. **Unofficial.** First collected
 2026-10-25 against TiinyOS 0.1.35, rechecked 2026-10-27 after the update to device services **0.1.36**
 (gateway spec unchanged, 37 endpoints; vault 54 → 59). Sources, marked per endpoint:
 

@@ -1,6 +1,6 @@
 # Tiiny API notes (unofficial)
 
-Field notes on the network API of the **Tiiny Pocket (z01)**: every endpoint I've found, what was actually
+Field notes on the network API of the **Tiiny Pocket**: every endpoint I've found, what was actually
 tested, recipes, quirks, and a tool to see what changed after a TiinyOS update.
 
 > **These are my personal findings**, from my own Tiiny, and a work in progress. I'll keep updating them as I
