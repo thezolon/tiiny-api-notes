@@ -3,3 +3,6 @@ snapshots/
 .env
 __pycache__/
 CLAUDE.md
+
+# a reference voice is personal: bring your own for the voice checks
+tools/assets/ref-voice.*
