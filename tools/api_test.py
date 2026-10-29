@@ -445,6 +445,7 @@ def main():
     ap.add_argument("--skip", help="comma-separated sections or check names to leave out")
     ap.add_argument("--list", action="store_true", help="list the checks and exit")
     ap.add_argument("--no-restore", action="store_true", help="don't reload the models that were running before")
+    ap.add_argument("--via", default="", help="how this computer reaches the Tiiny, for the report: usb, wifi, lan (compare runs with tools/api_compare.py)")
     a = ap.parse_args()
     known = set(SECTIONS) | {c[1] for c in CHECKS}
     wanted = [w for spec in a.only for w in spec.split(",") if w]
@@ -463,6 +464,11 @@ def main():
     out = HERE.parent / "snapshots" / f"api-test-{stamp}"
     out.mkdir(parents=True, exist_ok=True)
     before = list(t.running())
+    try:
+        tiiny_os = t.ok("GET", "/api/v1/sys/device_info").get("tiiny_os")
+    except Exception:
+        tiiny_os = None
+    print(f"TiinyOS {tiiny_os}, via {a.via or 'unknown (pass --via usb|wifi)'}", flush=True)
     results = []
     for section, name, fn, mid in checks:
         t0 = time.time()
@@ -476,16 +482,20 @@ def main():
             detail, status = f"{type(e).__name__}: {e}", "FAIL"
         results.append({"section": section, "check": name, "model": mid, "status": status, "seconds": round(time.time() - t0, 1), "detail": detail})
         print(f"{status:4}  {name:26} {results[-1]['seconds']:7.1f}s  {detail}", flush=True)
-    if before and not a.no_restore:
-        for mid in before:
-            try:
+    if not a.no_restore:  # put the device back as it was: unload what the run loaded, reload what it unloaded
+        try:
+            for mid in t.running():
+                if mid not in before:
+                    t.ok("POST", f"/api/v1/models/{urllib.parse.quote(mid, safe='')}/stop", {}, timeout=180)
+            for mid in before:
                 t.load(mid)
-            except Fail as e:
-                print(f"couldn't reload {mid}: {e}")
+        except Fail as e:
+            print(f"couldn't restore the models loaded before the run: {e}")
     passed = sum(r["status"] == "PASS" for r in results)
     failed = sum(r["status"] == "FAIL" for r in results)
     print(f"\n{passed} passed, {failed} failed, {len(results) - passed - failed} skipped. Report and outputs: {out}")
-    (out / "report.json").write_text(json.dumps({"when": stamp, "ran": wanted or ["all"], "results": results}, indent=1))
+    (out / "report.json").write_text(json.dumps({"when": stamp, "via": a.via or "unknown", "tiiny_os": tiiny_os, "ran": wanted or ["all"],
+                                                  "results": results}, indent=1))
     sys.exit(1 if failed else 0)
 
 

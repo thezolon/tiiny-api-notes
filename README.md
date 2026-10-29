@@ -21,6 +21,7 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [docs/MODELS.md](docs/MODELS.md) | every model in the Tiiny Model Store: type, size, NPU share, context, what it can do |
 | [docs/PRIVACY.md](docs/PRIVACY.md) | what the device keeps about your chats, and what you can delete through the API |
 | [tools/api_test.py](tools/api_test.py) | walk through the API and check each feature really works (chat, embeddings, OCR, images, voice, music, 3D); run one section or all |
+| [tools/api_compare.py](tools/api_compare.py) | put api_test reports side by side (e.g. USB vs Wi-Fi, or before/after an update) and mark what differs |
 | [tools/model_list.py](tools/model_list.py) | regenerate docs/MODELS.md from your device's Model Store catalogue |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
 
@@ -41,6 +42,8 @@ Something not working? Test just that part, or everything:
 python tools/api_test.py ocr             # one section: info chat embeddings ocr image audio music 3d
 python tools/api_test.py                 # full run (loads ~10 models in turn; 20-40 minutes)
 python tools/api_test.py --list          # every check and the model it uses
+python tools/api_test.py --via usb       # label the run; then --via wifi, and compare:
+python tools/api_compare.py snapshots/api-test-*/report.json
 ```
 
 It loads the models it needs (and puts back what was loaded before), checks each answer against known inputs in

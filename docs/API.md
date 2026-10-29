@@ -50,7 +50,7 @@ too (**tested**).
 
 | method | path | what | mark |
 |---|---|---|---|
-| POST | `/api/v1/sys/shutdown/` | power off (empty body). Replies `{"status":"ok","message":"System shutdown will be initiated in seconds via host API"}`; off ~2 s later. **Known issue on TiinyOS 0.1.36:** same reply, but the device stays on. Tiiny AI has acknowledged it; a fix is coming in an update | **tested** |
+| POST | `/api/v1/sys/shutdown/` | power off (empty body). Replies `{"status":"ok","message":"System shutdown will be initiated in seconds via host API"}`; off within ~10 s. 0.1.37 replies `…initiated in seconds via D-Bus` (earlier: `via host API`). **Broken on 0.1.36** (same `ok` reply, device stays on); **fixed in 0.1.37** (tested over USB and Wi-Fi, 2026-10-29) | **tested** |
 | POST | `/api/v1/sys/reboot/` | restart | **spec** |
 | GET / POST | `/api/v1/sys/ac_power/` | power on automatically when plugged in: GET → `{"status","ac_power": bool}`; POST `{"switch": 0\|1}` | **tested** (GET), **app** (POST) |
 | GET | `/api/v1/sys/status` | live `cpu`, `memory`, `gpu`, `npus`, `disk` | **tested** |
@@ -246,33 +246,39 @@ From Tiiny's docs (**docs**), not tested here.
 - Since 0.1.36, `/v1/models` reports `thinking` as an object (`supported`, `toggleable`, `enabled_by_default`,
   `levels`, `default_level`) instead of a boolean.
 - Port 80 returns 502 until the TiinyOS app has connected since boot.
-- Over USB only port 80 is open: no model ports, so no GLM-OCR and no SongGeneration direct
+- Over USB only port 80 is open (still true on 0.1.37): no model ports, so no GLM-OCR and no SongGeneration direct
   route (separate tracks, exact-length songs). The USB link's address can land in
   Docker's `172.17.x.x` (move Docker's `bip` if a container can't reach it).
 - Hunyuan3D `background` stage fails (BriefNet missing); SongGeneration style reference fails.
 - Plain `/v1/music/generate` fails for SongGeneration ("Session not found"); `/resume` ignores `seconds_total`.
-- 0.1.36: GLM-OCR isn't reachable through the API at all (`/v1/ocr` 404, chat 400); use its own port over Wi-Fi/LAN,
-  or PP-OCRv6 through `/v1/ocr`.
-- 0.1.36: power off (`/api/v1/sys/shutdown/`) answers `ok` but the device stays on; Tiiny has acknowledged it.
+- 0.1.36 and 0.1.37: GLM-OCR isn't reachable through the API at all (`/v1/ocr` 404, chat 400); use its own port over
+  Wi-Fi/LAN, or PP-OCRv6 through `/v1/ocr`.
+- 0.1.36: power off (`/api/v1/sys/shutdown/`) answers `ok` but the device stays on. Fixed in 0.1.37.
 - With the NPU nearly full, `unload_candidate` can say a model fits (e.g. 55% needed, 56% free) while the load never
   starts. Unload other models first (`/api/v1/models/unload_all`), then launch.
 - Streaming chat: the last chunk before `[DONE]` can carry `usage` with an empty `choices` list; don't index
   `choices[0]` blindly.
 
-## Test run (2026-10-28, TiinyOS 0.1.36, device services 0.1.30)
+## Test runs: USB vs Wi-Fi (2026-10-29, TiinyOS 0.1.37, device services 0.1.30)
 
-With [tools/api_test.py](../tools/api_test.py), over USB and Wi-Fi:
+Same device, same [tools/api_test.py](../tools/api_test.py) run twice: once over the USB cable, once over Wi-Fi.
+Everything behaves the same on both links except the models' own ports, which the USB link still blocks.
 
-| section | result |
-|---|---|
-| chat (Qwen3.6-35B-A3B): plain, streaming, tool calls, vision, Anthropic `/v1/messages`, Ollama `/api/chat` | all work |
-| embeddings (Qwen3-Embedding-0.6B) | works (1024 dims) |
-| OCR: PP-OCRv6 Small / Medium via `/v1/ocr` | work, 100% |
-| OCR: GLM-OCR via `/v1/ocr` / via chat | **broken** (404 / 400) |
-| OCR: GLM-OCR on its own port (Wi-Fi/LAN) | works, 100% |
-| image (Z-Image-Turbo, 512x512) | works |
-| voice clone (Qwen3-TTS Base) / transcription (Qwen3-ASR) | work (ASR 98% match) |
-| music loop (Foundation-1) | works |
-| 3D shape (Hunyuan3D-2.1) | works (~7 min) |
-| power off | **broken** (see above) |
+| check | USB cable | Wi-Fi |
+|---|---|---|
+| chat (Qwen3.6-35B-A3B): plain, streaming, tool calls, vision, Anthropic `/v1/messages`, Ollama `/api/chat` | PASS | PASS |
+| embeddings (Qwen3-Embedding-0.6B) | PASS | PASS |
+| OCR: PP-OCRv6 Small / Medium via `/v1/ocr` (100% on the test image) | PASS | PASS |
+| OCR: GLM-OCR via `/v1/ocr` | FAIL (404) | FAIL (404) |
+| OCR: GLM-OCR via `/v1/chat/completions` | FAIL (400 "does not support chat") | FAIL (400) |
+| **OCR: GLM-OCR on its own port** | **not reachable** | PASS (100%) |
+| image (Z-Image-Turbo, 512x512) | PASS | PASS |
+| voice clone (Qwen3-TTS Base) | PASS | PASS |
+| transcription (Qwen3-ASR, 98% match) | PASS | PASS |
+| music loop (Foundation-1) | PASS | PASS |
+| 3D shape (Hunyuan3D-2.1, ~7 min) | PASS | PASS |
+| power off (`/api/v1/sys/shutdown/`) | PASS (off in ~9 s) | PASS (off in ~9 s) |
 
+0.1.36 (2026-10-28) gave the same results except power off, which answered `ok` but left the device on.
+Compare your own runs: `python tools/api_test.py --via usb`, then `--via wifi`, then
+`python tools/api_compare.py snapshots/api-test-*/report.json`.
