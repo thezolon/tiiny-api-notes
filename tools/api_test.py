@@ -253,7 +253,8 @@ def check_vision(t, out):
 
 def check_anthropic(t, out):
     t.load(MODELS["chat"])
-    body = {"model": "default", "max_tokens": 200, "messages": [{"role": "user", "content": "Reply with exactly one word: mango"}]}
+    body = {"model": "default", "max_tokens": 200, "thinking": {"type": "disabled"},  # thinking is on by default here
+            "messages": [{"role": "user", "content": "Reply with exactly one word: mango"}]}
     res = t.ok("POST", "/v1/messages", body)
     text = "".join(b.get("text", "") for b in res.get("content", []) if b.get("type") == "text")
     if "mango" not in text.lower():

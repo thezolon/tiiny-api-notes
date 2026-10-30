@@ -109,7 +109,7 @@ The **device handles one request at a time**; parallel requests to different mod
 
 | method | path | what | mark |
 |---|---|---|---|
-| POST | `/v1/messages` | Anthropic Messages API (on `anthropic.api.tiiny` or the IP) | **tested** |
+| POST | `/v1/messages` | Anthropic Messages API (on `anthropic.api.tiiny` or the IP). With a thinking model it **thinks by default** (a `thinking` block before the text, which can use up `max_tokens`); send `"thinking": {"type": "disabled"}` for a plain answer | **tested** |
 | GET | `/v1/models` | model list in Anthropic format | probed |
 | POST | `/api/chat` | Ollama chat (`"stream": false`, `"think": false` work) | **tested** |
 | GET | `/api/tags` | Ollama model list (all installed models) | **tested** |
@@ -246,12 +246,12 @@ From Tiiny's docs (**docs**), not tested here.
 - Since 0.1.36, `/v1/models` reports `thinking` as an object (`supported`, `toggleable`, `enabled_by_default`,
   `levels`, `default_level`) instead of a boolean.
 - Port 80 returns 502 until the TiinyOS app has connected since boot.
-- Over USB only port 80 is open (still true on 0.1.37): no model ports, so no GLM-OCR and no SongGeneration direct
+- Over USB only port 80 is open (still true on 0.1.38): no model ports, so no GLM-OCR and no SongGeneration direct
   route (separate tracks, exact-length songs). The USB link's address can land in
   Docker's `172.17.x.x` (move Docker's `bip` if a container can't reach it).
 - Hunyuan3D `background` stage fails (BriefNet missing); SongGeneration style reference fails.
 - Plain `/v1/music/generate` fails for SongGeneration ("Session not found"); `/resume` ignores `seconds_total`.
-- 0.1.36 and 0.1.37: GLM-OCR isn't reachable through the API at all (`/v1/ocr` 404, chat 400); use its own port over
+- 0.1.36 to 0.1.38: GLM-OCR isn't reachable through the API at all (`/v1/ocr` 404, chat 400); use its own port over
   Wi-Fi/LAN, or PP-OCRv6 through `/v1/ocr`.
 - 0.1.36: power off (`/api/v1/sys/shutdown/`) answers `ok` but the device stays on. Fixed in 0.1.37.
 - With the NPU nearly full, `unload_candidate` can say a model fits (e.g. 55% needed, 56% free) while the load never
@@ -259,7 +259,7 @@ From Tiiny's docs (**docs**), not tested here.
 - Streaming chat: the last chunk before `[DONE]` can carry `usage` with an empty `choices` list; don't index
   `choices[0]` blindly.
 
-## Test runs: USB vs Wi-Fi (2026-10-29, TiinyOS 0.1.37, device services 0.1.30)
+## Test runs: USB vs Wi-Fi (2026-10-30, TiinyOS 0.1.38, device services 0.1.30)
 
 Same device, same [tools/api_test.py](../tools/api_test.py) run twice: once over the USB cable, once over Wi-Fi.
 Everything behaves the same on both links except the models' own ports, which the USB link still blocks.
@@ -277,8 +277,9 @@ Everything behaves the same on both links except the models' own ports, which th
 | transcription (Qwen3-ASR, 98% match) | PASS | PASS |
 | music loop (Foundation-1) | PASS | PASS |
 | 3D shape (Hunyuan3D-2.1, ~7 min) | PASS | PASS |
-| power off (`/api/v1/sys/shutdown/`) | PASS (off in ~9 s) | PASS (off in ~9 s) |
+| power off (`/api/v1/sys/shutdown/`) | not re-tested on 0.1.38 | not re-tested on 0.1.38 |
 
-0.1.36 (2026-10-28) gave the same results except power off, which answered `ok` but left the device on.
+0.1.37 (2026-10-29) gave the same results, with power off working on both links (off in ~9 s). 0.1.36
+(2026-10-28) was the same except power off, which answered `ok` but left the device on.
 Compare your own runs: `python tools/api_test.py --via usb`, then `--via wifi`, then
 `python tools/api_compare.py snapshots/api-test-*/report.json`.
