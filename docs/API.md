@@ -50,7 +50,7 @@ too (**tested**).
 
 | method | path | what | mark |
 |---|---|---|---|
-| POST | `/api/v1/sys/shutdown/` | power off (empty body). Replies `{"status":"ok","message":"System shutdown will be initiated in seconds via host API"}`; off within ~10 s. 0.1.37 replies `…initiated in seconds via D-Bus` (earlier: `via host API`). **Broken on 0.1.36** (same `ok` reply, device stays on); **fixed in 0.1.37** (tested over USB and Wi-Fi, 2026-10-29) | **tested** |
+| POST | `/api/v1/sys/shutdown/` | power off (empty body). Replies `{"status":"ok","message":"System shutdown will be initiated in seconds via host API"}`; off within ~10 s. 0.1.37 replies `…initiated in seconds via D-Bus` (earlier: `via host API`). **Broken on 0.1.36** (same `ok` reply, device stays on); **fixed in 0.1.37** (tested over USB and Wi-Fi, 2026-10-29), still working on 0.1.38 (2026-10-30) | **tested** |
 | POST | `/api/v1/sys/reboot/` | restart | **spec** |
 | GET / POST | `/api/v1/sys/ac_power/` | power on automatically when plugged in: GET → `{"status","ac_power": bool}`; POST `{"switch": 0\|1}` | **tested** (GET), **app** (POST) |
 | GET | `/api/v1/sys/status` | live `cpu`, `memory`, `gpu`, `npus`, `disk` | **tested** |
@@ -277,9 +277,10 @@ Everything behaves the same on both links except the models' own ports, which th
 | transcription (Qwen3-ASR, 98% match) | PASS | PASS |
 | music loop (Foundation-1) | PASS | PASS |
 | 3D shape (Hunyuan3D-2.1, ~7 min) | PASS | PASS |
-| power off (`/api/v1/sys/shutdown/`) | not re-tested on 0.1.38 | not re-tested on 0.1.38 |
+| power off (`/api/v1/sys/shutdown/`) | PASS (tested by hand, see below) | PASS (tested by hand, see below) |
 
-0.1.37 (2026-10-29) gave the same results, with power off working on both links (off in ~9 s). 0.1.36
+Power off on 0.1.38 was tested by hand later the same day: the device turned off, and on power-up it came back on
+0.1.38 (no rollback). 0.1.37 (2026-10-29) gave the same results, with power off working on both links (off in ~9 s). 0.1.36
 (2026-10-28) was the same except power off, which answered `ok` but left the device on.
 Compare your own runs: `python tools/api_test.py --via usb`, then `--via wifi`, then
 `python tools/api_compare.py snapshots/api-test-*/report.json`.
