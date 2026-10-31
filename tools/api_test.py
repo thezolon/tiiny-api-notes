@@ -11,8 +11,8 @@ Usage:
     python tools/api_test.py --list                   # show sections, checks and the models they use
 
 Inputs come from tools/assets/ (ocr-test.png, mug.png, ref-voice.wav + ref-voice.txt); outputs and a JSON report
-go to snapshots/ (git-ignored). Standard library only. After the Tiiny restarts, the API answers 502 until the
-TiinyOS app has been opened once; the run stops early if so. One request at a time: don't use the Tiiny for anything else while this runs.
+go to snapshots/ (git-ignored). Standard library only. After the Tiiny restarts, the API answers 502 until it is
+unlocked (`tiiny login` or opening the TiinyOS app); the run stops early if so. One request at a time: don't use the Tiiny for anything else while this runs.
 """
 import argparse
 import base64
@@ -462,7 +462,7 @@ def main():
         return
     t = Tiiny(*device())
     if t.call("GET", "/api/v1/models/running", timeout=15)[0] == 502:  # after a restart, until the app is opened once
-        sys.exit("The Tiiny looks locked after a restart: open the TiinyOS app once, then rerun.")
+        sys.exit("The Tiiny looks locked after a restart: run `tiiny login` or open the TiinyOS app, then rerun.")
     stamp = time.strftime("%Y%m%d-%H%M%S")
     out = HERE.parent / "snapshots" / f"api-test-{stamp}"
     out.mkdir(parents=True, exist_ok=True)

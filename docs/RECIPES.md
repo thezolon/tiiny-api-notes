@@ -15,8 +15,9 @@ curl -H "Authorization: Bearer $KEY" "$TIINY/api/v1/models/?including_downloadin
 curl -H "Authorization: Bearer $KEY" $TIINY/api/v1/npu/status               # NPU use
 ```
 
-After the Tiiny is powered off and on, every route answers 502 until the TiinyOS desktop app has been opened once;
-then it works, even with the app closed again.
+After the Tiiny is powered off and on, every route answers 502 until it's unlocked: run `tiiny login` (on a PC
+that's already signed in, "Already logged in as …" is enough) or open the TiinyOS desktop app. Then it works, even
+with the app closed.
 
 ## Load and unload a model
 
