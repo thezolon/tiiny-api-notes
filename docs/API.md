@@ -39,8 +39,10 @@ container doesn't). The pages need the API key for "Try it out" calls.
 
 **Auth:** `Authorization: Bearer <API key>` on port 80 (the key TiinyOS shows; the device accepts more
 than one). The Anthropic-style route also accepts `x-api-key` (**tested**); no key → 401. Discovery (39218) and model containers
-need no key. **Until the TiinyOS desktop app connects after the device boots, port 80 answers 502 on
-every route** (TiinyOS "Auto Start" avoids this).
+need no key. **After the Tiiny is powered off and on, every API call answers `502 Bad Gateway`, over USB and
+Wi-Fi alike, until the TiinyOS desktop app has been opened once.** Opening the app fixes it within seconds; after
+that the API keeps working even if the app is closed again, and closing the app while the Tiiny runs doesn't cause
+it (**tested**, 0.1.38, 2026-10-30, two power cycles). TiinyOS "Auto Start" avoids it. Reported to Tiiny.
 
 **Host names** (TiinyOS maps them to the device): `openai.api.tiiny`, `anthropic.api.tiiny`,
 `ollama.api.tiiny`, `api.tiiny`. All of them are the same port 80 — the routes below work on the plain IP
@@ -245,7 +247,7 @@ From Tiiny's docs (**docs**), not tested here.
   Qwen-Image right after a load): wait ~10 s and retry.
 - Since 0.1.36, `/v1/models` reports `thinking` as an object (`supported`, `toggleable`, `enabled_by_default`,
   `levels`, `default_level`) instead of a boolean.
-- Port 80 returns 502 until the TiinyOS app has connected since boot.
+- After a restart every call answers 502 until the TiinyOS app has been opened once (see Auth above; 0.1.38).
 - Over USB only port 80 is open (still true on 0.1.38): no model ports, so no GLM-OCR and no SongGeneration direct
   route (separate tracks, exact-length songs). The USB link's address can land in
   Docker's `172.17.x.x` (move Docker's `bip` if a container can't reach it).
