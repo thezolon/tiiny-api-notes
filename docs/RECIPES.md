@@ -19,6 +19,40 @@ After the Tiiny is powered off and on, every route answers 502 until it's unlock
 that's already signed in, "Already logged in as …" is enough) or open the TiinyOS desktop app. Then it works, even
 with the app closed.
 
+## Unlock automatically after a restart
+
+Run this every couple of minutes on a PC where the Tiiny CLI is installed and signed in: it calls `tiiny login` only
+when the Tiiny answers 502. No API key is needed (once the Tiiny is unlocked, a call without a key gets 401, not 502), and
+a Tiiny that's off or unreachable is left alone. The PC holds your TiinyOS sign-in, so use one you trust.
+
+**Windows** (PowerShell 5.1+). Save as `tiiny-unlock.ps1`:
+
+```powershell
+$Tiiny = "http://192.168.1.50"
+try {
+    Invoke-WebRequest "$Tiiny/api/v1/models/running" -UseBasicParsing -TimeoutSec 10 | Out-Null
+} catch {
+    if ($_.Exception.Response -and [int]$_.Exception.Response.StatusCode -eq 502) { tiiny login }
+}
+```
+
+Then schedule it every 2 minutes as yourself (it needs your signed-in CLI), from PowerShell:
+
+```powershell
+$a = New-ScheduledTaskAction -Execute powershell.exe -Argument '-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File "C:\path\to\tiiny-unlock.ps1"'
+$t = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 2)
+Register-ScheduledTask -TaskName "Tiiny unlock" -Action $a -Trigger $t
+```
+
+Remove it with `Unregister-ScheduledTask -TaskName "Tiiny unlock"`.
+
+**Linux/macOS** (cron, where the CLI is available). `crontab -e`, one line; use the full path to `tiiny`
+(`which tiiny`), since cron has a short PATH, and keep the `\%` (cron treats a bare `%` as a newline):
+
+```
+*/2 * * * * [ "$(curl -s -o /dev/null -m 10 -w '\%{http_code}' http://192.168.1.50/api/v1/models/running)" = 502 ] && /full/path/to/tiiny login >/dev/null 2>&1
+```
+
 ## Load and unload a model
 
 ```bash
