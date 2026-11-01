@@ -329,3 +329,31 @@ Power off on 0.1.38 was tested by hand later the same day: the device turned off
 (2026-10-28) was the same except power off, which answered `ok` but left the device on.
 Compare your own runs: `python tools/api_test.py --via usb`, then `--via wifi`, then
 `python tools/api_compare.py snapshots/api-test-*/report.json`.
+
+## Chat speed (measured 2026-11-01, TiinyOS 0.1.38)
+
+One model loaded at a time, one request at a time, over Wi-Fi, thinking off, prompt caching off (`cache_prompt:
+false`), two runs each (they agreed within 1-2%). "Writing" = 400-token answers; "reading" = 2K and 6K-token prompts.
+Numbers from llama.cpp's own `timings` in the reply (`predicted_per_second`, `prompt_per_second`).
+
+| model | kind | writing (tok/s) | reading a prompt (tok/s) | a 6K-token prompt takes |
+|---|---|---|---|---|
+| Qwen3.6-35B-A3B | MoE, ~3B active, 17.4 GB | **27.4** | ~790 | ~8 s |
+| gpt-oss-20b | MoE, ~3.6B active, 10.3 GB | 24.1 | ~1,300 | ~5 s |
+| Qwen3.5-9B | dense, 6.2 GB | 18.4 | 1,200-1,420 | ~4.5 s |
+| Qwen3-4B-Instruct-2507 | dense, 2.3 GB | 18.1 | 1,650-1,950 | ~4 s |
+| Qwen3.8-27B | dense, 15.4 GB | 6.2 | ~500 | ~13 s |
+
+What it means:
+- **The MoE models are the fast ones.** Qwen3.6-35B-A3B writes 4x faster than the dense 27B and is the best
+  speed/quality pick for chat. Long prompts cost a few seconds before the first word.
+- **Small dense models stop at ~18 tok/s.** The 4B is no faster than the 9B, so something other than model size sets
+  that limit (about 55 ms per token). *Inferred:* a fixed per-token cost, for example handing work between the CPU and
+  the NPU.
+- **Effective bandwidth:** the dense 27B reads all 15.4 GB of weights for every token, so 6.24 tok/s means the device
+  moves about **96 GB/s** while running it. That's the device as a whole: the Tiiny has a CPU with 32 GB and a separate
+  NPU with 48 GB (`device_info`), and Tiiny says its runtime splits work between them, so this is the combined figure,
+  not one memory's speed. Treat it as the real-world number to plan with; the hardware's peaks are higher.
+- **Rough rule for a big dense model:** writing speed ≈ 96 GB/s ÷ its size in GB (a 30 GB dense model would write
+  ~3 tok/s), but small dense models don't go above ~18 tok/s. MoE models come in at about half of what the same rule
+  gives for their active part (35B-A3B: ~1.5 GB active → rule says ~64, measured 27). A rough estimate, not a law.
