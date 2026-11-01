@@ -106,7 +106,8 @@ The **device handles one request at a time**; parallel requests to different mod
 | POST | `/v1/ocr?model=<id>` | `{"input": data URI, "response_format": "json"}` → `data[0].text` + lines. PP-OCRv6 Small/Medium work (100% on the test image, 0.1.36). **GLM-OCR doesn't work through the API on 0.1.36**: here it answers 404 `Endpoint not found`, and `/v1/chat/completions` answers 400 `does not support chat`. It works on its own port (see Model containers) | **tested** |
 | GET/POST | `/v1/music/info`, `/v1/music/sessions`, `/v1/music/generate[/wav\|/preview\|/resume]`, `/v1/music/sessions/{id}/download?format=mp3` | music (Foundation-1 loops via `/generate/wav` with `{model, prompt, config}`; SongGeneration via `/generate/preview` + `/resume`) | **tested** |
 | GET/POST | `/v1/3d/capabilities`, `/v1/3d/tasks`, `/v1/3d/tasks/{id}`, `/v1/3d/tasks/{id}/cancel` | Hunyuan3D stages: multipart `stage` (shape, simplify, texture, export), `params` JSON, files `image/mesh/material` | **tested** |
-| — | `/v1/video/*` | reserved by the gateway; no video models yet | — |
+| GET | `/v1/video/info?model=<id>` | a loaded video model's options (0.1.38): `canvases` (the only sizes it takes; MiniMax-H3-Turbo: 1344x768, 768x1344, 832x480, 480x832), `step_options` (4-8), `default_steps` (7), `fps` (24), `max_keyframes` (2), `audio` (32 kHz stereo) | **tested** |
+| POST/GET/DELETE | `/v1/videos`, `/v1/videos/{id}`, `/v1/videos/{id}/content` | OpenAI-style video jobs (0.1.38). POST `{model, prompt, size "WxH", seconds "2", steps, seed, image}` (`image`: a start frame as a data URI) answers `{id, status: queued}`. Poll `GET /v1/videos/{id}` (`status` queued → in_progress → completed/failed, `progress` 0-100); `GET …/content` is the MP4 (H.264 + AAC). **Max 7 s**: 8 s and longer fail at once with "no exported bucket fits a request needing [audio=…, target_video=…]" (the submit itself accepts any length; a size not in `canvases` fails a few seconds in). Times (MiniMax-H3-Turbo): 2 s at 832x480, 4 steps: ~7 min; 7 s at 832x480, 4 steps: ~12 min; 5 s at 1344x768, 4 steps: ~32 min. **Renders are cut off after 1 hour** (see Known quirks) | **tested** |
 
 ## Inference: Anthropic- and Ollama-compatible
 
@@ -128,6 +129,39 @@ Port from `GET /api/v1/models/running`; changes on every load. Blocked over USB.
 | SongGeneration-v2 | `POST :port/v1/generate {"config": {caption, lyrics, generation_type: mixed\|bgm\|vocal\|separate, seconds_total, seed, steps, temperature, top_k, top_p}}` → `audio_data` (48 kHz); only `config` at the top level |
 | Hunyuan3D-2.1 | `POST :port/v1/tasks` (multipart, as `/v1/3d/tasks`); `GET :port/v1/tasks/{id}` |
 | GLM-OCR | `POST :port/v1/chat/completions` with the image and the text `Text Recognition:` (100% on the test image, 0.1.36; the only working route for GLM-OCR) |
+
+### What runs each kind of model
+
+Read from each model's own port with plain GETs (`/`, `/openapi.json`, `/health`, `/v1/models`, `/props`) and the
+`Server` header; **tested** 2026-11-01, TiinyOS 0.1.38, one model per kind. Every model runs in its own container,
+started on load; the gateway on port 80 routes to it.
+
+| models | what answers on the model's port |
+|---|---|
+| chat (Qwen3.5-9B) | **llama.cpp** server (`Server: llama.cpp`, `/props`, `owned_by: llamacpp`); a GGUF file (`model.q8_0.gguf` for Qwen3.5-9B), 1 slot, 128K context |
+| embeddings, rerankers, ASR (Qwen3-ASR, Whisper; both list a `qwen3_forced_aligner` too), PP-OCRv6 | `owned_by: "mirage"` in `/v1/models` |
+| video (MiniMax-H3-Turbo) | **"Mirage video server (minimax_h3)"**; `/v1/models` lists `canvases`, `step_options`, `buckets`, `dynamic_geometry: false`, `progressive_resolution: true` |
+| image (Z-Image-Turbo, FLUX.2-klein-4B) | an unnamed server; `/v1/models` gives `type: image_generation`, `context_length: 512` |
+| TTS (Qwen3-TTS, VibeVoice, Supertonic) | one shared TTS server: `/v1/synthesize`, `/v1/synthesize/stream`, `/v1/audio/speech`, `/v1/capabilities`; Qwen3-TTS reports itself as `…-Awq` (AWQ-quantized) |
+| music (Foundation-1, ACE-Step) | Python FastAPI (`Server: uvicorn`): "Text-to-Music Server" 1.0.0 (ACE-Step: "using a configurable TTM model") |
+| 3D (Hunyuan3D-2.1, TRELLIS.2) | FastAPI "Image-to-3D Server" 2.0.0: stage tasks with `/v1/tasks/{id}/pause`, `/resume`, `/cancel`, `/artifacts`, `/v1/version` |
+| GLM-OCR | FastAPI "OpenAI Compatible Server" 1.0.0 (`owned_by: system`) |
+
+**Hardware** (`GET /api/v1/sys/device_info`): CPU `ARMv9.2`, GPU `G720`, `dnpu` "160 BF16 TOPs", `peak_int8` "190 TOPS
+(30 TOPS on SoC, 160 TOPS on dNPU)", `ram` "80 GB (32 GB on SoC, 48 GB on dNPU)". So there are two AI processors and
+two memory pools: the main chip's NPU with 32 GB, and a separate NPU (the "dNPU") with its own 48 GB.
+
+**Inferred, not confirmed by Tiiny:**
+- "Mirage" looks like Tiiny's own engine for everything that isn't llama.cpp (it names itself only in the video
+  server and in `owned_by`).
+- The main chip matches the CIX P1 (12-core Armv9.2, Mali-G720, 30 TOPS NPU), as third-party write-ups suggest. The
+  dNPU vendor isn't public; write-ups disagree.
+- "No exported bucket fits" plus `dynamic_geometry: false` and a fixed list of `canvases` suggest the video model is
+  compiled ahead of time for a fixed set of sizes and lengths, as NPU toolchains generally require. If so, other sizes
+  or lengths over 7 s would need Tiiny to export new versions of the model; nothing on the device can add them.
+  Image models' "verified sizes" may be the same idea.
+- Tiiny credits PowerInfer (its open-source CPU/GPU inference engine, github.com/Tiiny-AI/PowerInfer) as core tech;
+  nothing on the API names it.
 
 ## Knowledge base / vault (`/kb`)
 
@@ -261,6 +295,14 @@ From Tiiny's docs (**docs**), not tested here.
   starts. Unload other models first (`/api/v1/models/unload_all`), then launch.
 - Streaming chat: the last chunk before `[DONE]` can carry `usage` with an empty `choices` list; don't index
   `choices[0]` blindly.
+- **Video renders over 1 hour fail but keep running** (0.1.38, 2026-11-01, MiniMax-H3-Turbo, 1344x768, 7 s, 8 steps,
+  which would need about 2 hours): after exactly 60 minutes `GET /v1/videos/{id}` reports `status: failed`,
+  `error.code: GENERATION_TIMEOUT` ("video generation exceeded the gateway time limit"), yet the NPU stays at 100%:
+  the render goes on in the background. `DELETE /v1/videos/{id}` answers `deleted: true` but doesn't stop it. Stopping
+  the video model (`POST /api/v1/models/{id}/stop`) does, slowly (no answer within 60 s), and afterwards every model
+  was unloaded and `/api/v1/npu/status` showed no NPU readings for a few minutes. The next launch of the video model
+  (hours later) answered 409 `cleanup_failed` / `physical_stop_failed` ("runtime cleanup failed and must be retried");
+  launching again worked (loaded in 5 s). Keep renders well under an hour.
 
 ## Test runs: USB vs Wi-Fi (2026-10-30, TiinyOS 0.1.38, device services 0.1.30)
 
