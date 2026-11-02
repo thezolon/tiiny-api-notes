@@ -16,8 +16,11 @@ Corrections welcome.
   `/kb/files/{source_id}` 404s for the day file).
 - **You can't count them either.** On a `queued` day, `journal_item_count` is 0 and `journal_items` is empty even after
   dozens of API chats (0.1.38). The only visible sign of a capture is the day's `content_updated_at` moving: 16 s
-  after a test chat on 0.1.38. It doesn't move for every chat: an exact repeat of a chat sent two minutes earlier
-  left it unchanged for over 6 minutes, so treat it as "capturing is happening", not as a per-chat record.
+  after a test chat on 0.1.38. It doesn't move for every chat, because **exact duplicates are skipped**:
+  tested with a fixed `seed` so a repeat gets the identical answer. A new chat moved it (21 s); the exact same
+  request and answer again didn't (3 min); the same prompt with a different answer ("Elephant." vs "Elephant") did
+  (20 s); another new chat did (51 s). So a chat is left out only when both the prompt and the answer match one
+  already stored, to the character. (Seen only through that timestamp: "skipped" means the stored day didn't change.)
 - **There's no per-request list.** `GET /kb/conversation_days` lists one entry per **day**, oldest first: with a small
   `limit` you only get the oldest days, so use a large one (or ask for today directly:
   `GET /kb/conversation_days/2026-11-01`). Days follow the device's date.
