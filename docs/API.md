@@ -328,6 +328,10 @@ Everything behaves the same on both links except the models' own ports, which th
 | 3D shape (Hunyuan3D-2.1, ~7 min) | PASS | PASS |
 | power off (`/api/v1/sys/shutdown/`) | PASS (tested by hand, see below) | PASS (tested by hand, see below) |
 
+**Re-run 2026-11-02** after the TiinyOS desktop app updated to **1.0.3**: the device itself was unchanged (TiinyOS
+0.1.38, services 0.1.30), and so was everything here: the same results over Wi-Fi, both API specs unchanged
+(gateway 37 endpoints, kb 59), and video still capped at 7 s with the same four sizes.
+
 Power off on 0.1.38 was tested by hand later the same day: the device turned off, and on power-up it came back on
 0.1.38 (no rollback). 0.1.37 (2026-10-29) gave the same results, with power off working on both links (off in ~9 s). 0.1.36
 (2026-10-28) was the same except power off, which answered `ok` but left the device on.

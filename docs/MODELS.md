@@ -1,6 +1,6 @@
 # Models in the Tiiny Model Store
 
-All 82 models the Model Store offered on 2026-10-29, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
+All 82 models the Model Store offered on 2026-11-02, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
 
 - **NPU** = share of the Tiiny's NPU memory the model takes when loaded. Models that add up to more than 100% can't be loaded together; TiinyOS (or the API's `unload_candidate`) tells you what has to go.
 - **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens.
@@ -16,13 +16,13 @@ All 82 models the Model Store offered on 2026-10-29, read from the device's own 
 | `Qwen/Qwen3.5-35B-A3B` | 35B | 45% | 16.9 GB | 128K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.6-35B-A3B-Turbo` | 35B | 46% | 17.7 GB | 256K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.6-35B-A3B` | 35B | 47% | 17.4 GB | 256K | Vision, Reasoning, Tool Use |
-| `InternScience/Sage-A1.5-Turbo` | 35B | 48% | 17.5 GB | 256K | Vision, Reasoning |
+| `InternScience/Sage-A1.5-Turbo` | 35B | 48% | 17.5 GB | 256K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.6-27B` | 27B | 48% | 15.6 GB | 128K | Vision, Reasoning, Tool Use |
 | `huihui-ai/Huihui-Ornith-1.5-35B-A3B-abliterated-Turbo` | 35B | 48% | 17.5 GB | 256K | Vision, Reasoning, Tool Use |
 | `deepreinforce-ai/Ornith-1.0-35B` | 35B | 50% | 18.0 GB | 128K | Vision, Reasoning, Tool Use |
-| `Qwen/Qwen3.8-27B` | 27B | 51% | 15.4 GB | 256K | Vision, Reasoning, Tool Use |
+| `Qwen/Qwen3.8-27B` | 27B | 52% | 15.9 GB | 256K | Vision, Reasoning, Tool Use |
 | `google/gemma-4-31B-it` | 31B | 53% | 17.7 GB | 128K | Vision, Reasoning, Tool Use |
-| `endless-frontier/BigBang-v1-Turbo` | 36B | 54% | 17.9 GB | 128K | Vision, Thinking (toggle) |
+| `endless-frontier/BigBang-v1-Turbo` | 36B | 54% | 17.9 GB | 128K | Vision, Reasoning, Tool Use |
 | `ornith-ai/Ornith-1.5-35B-A3B-Turbo` | 35B | 54% | 17.6 GB | 256K | Vision, Reasoning, Tool Use |
 | `Qwen/Qwen3.6-27B-Turbo` | 27B | 55% | 15.7 GB | 128K | Vision, Reasoning, Tool Use |
 | `trohrbaugh/Qwen3.8-27B-heretic-ara-Turbo` | 27B | 56% | 15.9 GB | 128K | Vision, Reasoning, Tool Use |
@@ -61,7 +61,7 @@ All 82 models the Model Store offered on 2026-10-29, read from the device's own 
 | `baidu/ERNIE-Image-Turbo` | 8B | 27% | 11.4 GB |  |  |
 | `HiDream-ai/HiDream-O1-Image-Dev` | 9B | 30% | 15.2 GB |  |  |
 | `SenseTime/SenseNova-U1.5-8B-MoT` | 8B | 48% | 26.2 GB |  |  |
-| `Qwen/Qwen-Image-2.1` | 7B | 58% | 15.6 GB |  | Image Editing |
+| `Qwen/Qwen-Image-2.1` | 7B | 62% | 15.6 GB |  | Image Editing |
 
 ## Reading text in images (OCR) (4)
 
