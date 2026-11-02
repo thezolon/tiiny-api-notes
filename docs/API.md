@@ -295,6 +295,10 @@ From Tiiny's docs (**docs**), not tested here.
   starts. Unload other models first (`/api/v1/models/unload_all`), then launch.
 - Streaming chat: the last chunk before `[DONE]` can carry `usage` with an empty `choices` list; don't index
   `choices[0]` blindly.
+- **Thinking counts toward `max_tokens`.** With a thinking model (e.g. Qwen3.6) and a small limit like 256, the reply
+  can come back with empty `content`, `finish_reason: "length"` and the budget spent in `reasoning_content`: it looks
+  like the model refused. Turn thinking off for the request (`"chat_template_kwargs": {"enable_thinking": false}`;
+  Anthropic style: `"thinking": {"type": "disabled"}`) or raise `max_tokens` to 1-2K.
 - **Video renders over 1 hour fail but keep running** (0.1.38, 2026-11-01, MiniMax-H3-Turbo, 1344x768, 7 s, 8 steps,
   which would need about 2 hours): after exactly 60 minutes `GET /v1/videos/{id}` reports `status: failed`,
   `error.code: GENERATION_TIMEOUT` ("video generation exceeded the gateway time limit"), yet the NPU stays at 100%:
