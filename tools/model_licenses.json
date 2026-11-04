@@ -1,0 +1,367 @@
+{
+ "Qwen/Qwen-Image-2.1-PE-I2I": {
+  "license": "Qwen Research",
+  "source": "Qwen/Qwen-Image-2.1-PE-I2I",
+  "limit": "non-commercial (research/evaluation only without a separate license)"
+ },
+ "Qwen/Qwen3.5-9B-Turbo": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.5-9B",
+  "via": "base model"
+ },
+ "Qwen/Qwen3.5-9B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.5-9B"
+ },
+ "Qwen/Qwen3.5-35B-A3B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.5-35B-A3B"
+ },
+ "Qwen/Qwen3.6-35B-A3B-Turbo": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.6-35B-A3B",
+  "via": "base model"
+ },
+ "Qwen/Qwen3.6-35B-A3B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.6-35B-A3B"
+ },
+ "InternScience/Sage-A1.5-Turbo": {
+  "license": "Apache-2.0",
+  "source": "InternScience/Sage-A1.5",
+  "via": "base model"
+ },
+ "Qwen/Qwen3.6-27B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.6-27B"
+ },
+ "huihui-ai/Huihui-Ornith-1.5-35B-A3B-abliterated-Turbo": {
+  "license": "MIT",
+  "source": "huihui-ai/Huihui-Ornith-1.5-35B-A3B-abliterated",
+  "via": "base model"
+ },
+ "deepreinforce-ai/Ornith-1.0-35B": {
+  "license": "MIT",
+  "source": "deepreinforce-ai/Ornith-1.0-35B"
+ },
+ "Qwen/Qwen3.8-27B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.8-27B"
+ },
+ "google/gemma-4-31B-it": {
+  "license": "Apache-2.0",
+  "source": "google/gemma-4-31B-it"
+ },
+ "endless-frontier/BigBang-v1-Turbo": {
+  "license": "Apache-2.0",
+  "source": "endless-frontier/BigBang-v1",
+  "via": "base model"
+ },
+ "ornith-ai/Ornith-1.5-35B-A3B-Turbo": {
+  "license": "MIT",
+  "source": "ornith-ai/Ornith-1.5-35B-A3B",
+  "via": "base model"
+ },
+ "Qwen/Qwen3.6-27B-Turbo": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3.6-27B",
+  "via": "base model"
+ },
+ "trohrbaugh/Qwen3.8-27B-heretic-ara-Turbo": {
+  "license": "Apache-2.0",
+  "source": "trohrbaugh/Qwen3.8-27B-heretic-ara",
+  "via": "base model"
+ },
+ "google/gemma-4-26B-A4B-it": {
+  "license": "Apache-2.0",
+  "source": "google/gemma-4-26B-A4B-it"
+ },
+ "Qwen/Qwen-Image-2.1-PE-T2I": {
+  "license": "Qwen Research",
+  "source": "Qwen/Qwen-Image-2.1-PE-T2I",
+  "limit": "non-commercial (research/evaluation only without a separate license)"
+ },
+ "Qwen/Qwen3-4B-Instruct-2507": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-4B-Instruct-2507"
+ },
+ "openai/gpt-oss-20b": {
+  "license": "Apache-2.0",
+  "source": "openai/gpt-oss-20b"
+ },
+ "Qwen/Qwen3-8B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-8B"
+ },
+ "Qwen/Qwen3-30B-A3B-Instruct": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-30B-A3B-Instruct-2507",
+  "via": "base model"
+ },
+ "Qwen/Qwen3-Coder-30B-A3B-Instruct": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Coder-30B-A3B-Instruct"
+ },
+ "Qwen/Qwen3-Coder-30B-A3B-Instruct-Turbo": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Coder-30B-A3B-Instruct",
+  "via": "base model"
+ },
+ "zai-org/GLM-4.7-Flash": {
+  "license": "MIT",
+  "source": "zai-org/GLM-4.7-Flash"
+ },
+ "Qwen/Qwen3-30B-A3B-Thinking": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-30B-A3B-Thinking-2507",
+  "via": "base model"
+ },
+ "Qwen/Qwen3-Coder-Next": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Coder-Next"
+ },
+ "openai/gpt-oss-120b": {
+  "license": "Apache-2.0",
+  "source": "openai/gpt-oss-120b"
+ },
+ "abenzerps/Qwen-Image-2.1-Uncensored-Quantized": {
+  "license": "Qwen Research",
+  "source": "abenzerps/Qwen-Image-2.1-Uncensored-Quantized",
+  "limit": "non-commercial (research/evaluation only without a separate license)"
+ },
+ "TaoBaiBai2025/Z-Image-Turbo-Creating-Realistic": {
+  "license": "Apache-2.0?",
+  "source": "long12256/Z-image-turbo_Creating-Realistic",
+  "via": "likely source repo"
+ },
+ "Tongyi-MAI/Z-Image-Turbo": {
+  "license": "Apache-2.0",
+  "source": "Tongyi-MAI/Z-Image-Turbo"
+ },
+ "Tongyi-MAI/Z-Image-Turbo-Children-Drawing": {
+  "license": "Apache-2.0?",
+  "source": "ostris/z_image_turbo_childrens_drawings",
+  "via": "likely source repo"
+ },
+ "YeiYeiArt/Z-Image-Turbo-CharacterDesignSheet": {
+  "license": "?",
+  "source": null,
+  "limit": "source not found on Hugging Face"
+ },
+ "black-forest-labs/FLUX.2-klein-4B": {
+  "license": "Apache-2.0",
+  "source": "black-forest-labs/FLUX.2-klein-4B"
+ },
+ "fal/FLUX.2-klein-4B-Background-Remove": {
+  "license": "Apache-2.0",
+  "source": "fal/flux-2-klein-4B-background-remove-lora",
+  "via": "source repo"
+ },
+ "fal/FLUX.2-klein-4B-Object-Remove": {
+  "license": "Apache-2.0",
+  "source": "fal/flux-2-klein-4B-object-remove-lora",
+  "via": "source repo"
+ },
+ "fal/FLUX.2-klein-4B-Outpaint": {
+  "license": "Apache-2.0",
+  "source": "fal/flux-2-klein-4B-outpaint-lora",
+  "via": "source repo"
+ },
+ "fal/FLUX.2-klein-4B-Zoom": {
+  "license": "Apache-2.0",
+  "source": "fal/flux-2-klein-4B-zoom-lora",
+  "via": "source repo"
+ },
+ "baidu/ERNIE-Image-Turbo": {
+  "license": "Apache-2.0",
+  "source": "baidu/ERNIE-Image-Turbo"
+ },
+ "HiDream-ai/HiDream-O1-Image-Dev": {
+  "license": "MIT",
+  "source": "HiDream-ai/HiDream-O1-Image-Dev"
+ },
+ "SenseTime/SenseNova-U1.5-8B-MoT": {
+  "license": "Apache-2.0",
+  "source": "sensenova/SenseNova-U1.5-8B-MoT",
+  "via": "source repo"
+ },
+ "Qwen/Qwen-Image-2.1": {
+  "license": "Qwen Research",
+  "source": "Qwen/Qwen-Image-2.1",
+  "limit": "non-commercial (research/evaluation only without a separate license)"
+ },
+ "PaddlePaddle/PP-OCRv6-Small": {
+  "license": "Apache-2.0",
+  "source": "PaddlePaddle/PP-OCRv6_small_rec",
+  "via": "source repo"
+ },
+ "PaddlePaddle/PP-OCRv6-Medium": {
+  "license": "Apache-2.0",
+  "source": "PaddlePaddle/PP-OCRv6_medium_rec",
+  "via": "source repo"
+ },
+ "zai-org/GLM-OCR": {
+  "license": "MIT",
+  "source": "zai-org/GLM-OCR"
+ },
+ "PaddlePaddle/PP-DocLayoutV3": {
+  "license": "Apache-2.0",
+  "source": "PaddlePaddle/PP-DocLayoutV3"
+ },
+ "nvidia/Parakeet-TDT-0.6B-V3": {
+  "license": "CC-BY-4.0",
+  "source": "nvidia/Parakeet-TDT-0.6B-V3"
+ },
+ "openai/Whisper-large-v3-turbo": {
+  "license": "MIT",
+  "source": "openai/Whisper-large-v3-turbo"
+ },
+ "FunAudioLLM/Fun-ASR-MLT-Nano": {
+  "license": "Apache-2.0",
+  "source": "FunAudioLLM/Fun-ASR-MLT-Nano-2512",
+  "via": "source repo"
+ },
+ "OpenMOSS-Team/MOSS-Transcribe-Diarize": {
+  "license": "Apache-2.0",
+  "source": "OpenMOSS-Team/MOSS-Transcribe-Diarize"
+ },
+ "FunAudioLLM/Fun-ASR-Nano": {
+  "license": "Apache-2.0",
+  "source": "FunAudioLLM/Fun-ASR-Nano-2512",
+  "via": "source repo"
+ },
+ "Qwen/Qwen3-ASR-1.7B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-ASR-1.7B"
+ },
+ "OpenMOSS-Team/MOSS-TTS-Nano-100M": {
+  "license": "Apache-2.0",
+  "source": "OpenMOSS-Team/MOSS-TTS-Nano-100M"
+ },
+ "Supertone/supertonic-3": {
+  "license": "OpenRAIL",
+  "source": "Supertone/supertonic-3"
+ },
+ "hexgrad/Kokoro-82M": {
+  "license": "Apache-2.0",
+  "source": "hexgrad/Kokoro-82M"
+ },
+ "microsoft/VibeVoice-Realtime-0.5B": {
+  "license": "MIT",
+  "source": "microsoft/VibeVoice-Realtime-0.5B"
+ },
+ "Qwen/Qwen3-TTS-12Hz-1.7B-Base": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-TTS-12Hz-1.7B-Base"
+ },
+ "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign"
+ },
+ "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"
+ },
+ "microsoft/VibeVoice-1.5B": {
+  "license": "MIT",
+  "source": "microsoft/VibeVoice-1.5B"
+ },
+ "RoyalCities/Foundation-1": {
+  "license": "Stability AI Community",
+  "source": "RoyalCities/Foundation-1",
+  "limit": "commercial use only below USD 1M annual revenue"
+ },
+ "m-a-p/YuE2-3B": {
+  "license": "CC-BY-NC-4.0",
+  "source": "m-a-p/YuE2-3B",
+  "limit": "non-commercial"
+ },
+ "tencent/SongGeneration-v2-large": {
+  "license": "Tencent (custom)",
+  "source": "tencent/SongGeneration",
+  "limit": "not checked: the license page needs a Hugging Face login; Tencent's other licenses exclude regions, so check before use"
+ },
+ "ACE-Step/AceStep-XL-Base": {
+  "license": "MIT",
+  "source": "ACE-Step/acestep-v15-xl-base",
+  "via": "source repo"
+ },
+ "ACE-Step/AceStep-XL-Turbo": {
+  "license": "MIT",
+  "source": "ACE-Step/acestep-v15-xl-turbo",
+  "via": "base model"
+ },
+ "microsoft/TRELLIS.2-4B": {
+  "license": "MIT",
+  "source": "microsoft/TRELLIS.2-4B"
+ },
+ "Tencent/Hunyuan3d-2.1": {
+  "license": "Tencent Hunyuan 3D Community",
+  "source": "Tencent/Hunyuan3d-2.1",
+  "limit": "**not licensed in the EU, the UK or South Korea**; over 1M monthly users needs a license from Tencent",
+  "region": "EU, UK, South Korea"
+ },
+ "lightx2v/MiniMax-H3-Turbo": {
+  "license": "MiniMax H3 Community",
+  "source": "MiniMaxAI/MiniMax-H3",
+  "via": "base model",
+  "limit": "**not licensed in the EU, the UK, South Korea or the USA**",
+  "region": "EU, UK, South Korea, USA"
+ },
+ "Qwen/Qwen3-Embedding-0.6B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Embedding-0.6B"
+ },
+ "tencent/R3-embedding-0.6b": {
+  "license": "Apache-2.0",
+  "source": "tencent/R3-embedding-0.6b"
+ },
+ "nvidia/Nemotron-3-Embed-1B-BF16": {
+  "license": "OpenMDW-1.1",
+  "source": "nvidia/Nemotron-3-Embed-1B-BF16"
+ },
+ "Qwen/Qwen3-Vl-Embedding-2b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Vl-Embedding-2b"
+ },
+ "Qwen/Qwen3-Embedding-8b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Embedding-8b"
+ },
+ "nvidia/Nemotron-3-Embed-8b-Bf16": {
+  "license": "OpenMDW-1.1",
+  "source": "nvidia/Nemotron-3-Embed-8b-Bf16"
+ },
+ "Qwen/Qwen3-Vl-Embedding-8b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Vl-Embedding-8b"
+ },
+ "Qwen/Qwen3-Embedding-4b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Embedding-4b"
+ },
+ "Qwen/Qwen3-Reranker-0.6B": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Reranker-0.6B"
+ },
+ "tencent/R3-rerank-0.6b": {
+  "license": "Apache-2.0",
+  "source": "tencent/R3-rerank-0.6b"
+ },
+ "Qwen/Qwen3-Vl-Reranker-2b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Vl-Reranker-2b"
+ },
+ "Qwen/Qwen3-Reranker-4b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Reranker-4b"
+ },
+ "Qwen/Qwen3-Reranker-8b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Reranker-8b"
+ },
+ "Qwen/Qwen3-Vl-Reranker-8b": {
+  "license": "Apache-2.0",
+  "source": "Qwen/Qwen3-Vl-Reranker-8b"
+ }
+}
