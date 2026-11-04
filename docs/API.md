@@ -332,6 +332,9 @@ Everything behaves the same on both links except the models' own ports, which th
 0.1.38, services 0.1.30), and so was everything here: the same results over Wi-Fi, both API specs unchanged
 (gateway 37 endpoints, kb 59), and video still capped at 7 s with the same four sizes.
 
+**Re-run 2026-11-04** (Tiiny CLI updated to v0.0.5 the same day, device unchanged): USB and Wi-Fi identical again,
+same results as above.
+
 Power off on 0.1.38 was tested by hand later the same day: the device turned off, and on power-up it came back on
 0.1.38 (no rollback). 0.1.37 (2026-10-29) gave the same results, with power off working on both links (off in ~9 s). 0.1.36
 (2026-10-28) was the same except power off, which answered `ok` but left the device on.
@@ -365,3 +368,40 @@ What it means:
 - **Rough rule for a big dense model:** writing speed ≈ 96 GB/s ÷ its size in GB (a 30 GB dense model would write
   ~3 tok/s), but small dense models don't go above ~18 tok/s. MoE models come in at about half of what the same rule
   gives for their active part (35B-A3B: ~1.5 GB active → rule says ~64, measured 27). A rough estimate, not a law.
+
+## Tiiny CLI vs the direct API (CLI v0.0.5, 2026-11-04, TiinyOS 0.1.38)
+
+The same tests run through the `tiiny` CLI and straight against the API, over USB, same models, same inputs, scored the
+same way. Run it yourself: `python tools/cli_compare.py` (needs the CLI installed and signed in).
+
+| feature | CLI | API |
+|---|---|---|
+| chat (`tiiny run -m … -p …`) | PASS | PASS |
+| chat with an image (`tiiny run -m <chat model> -f image.png`) | **FAIL: the image isn't sent** | PASS |
+| embeddings (`tiiny run embed`) | PASS | PASS |
+| OCR, PP-OCRv6 Small/Medium (`tiiny run ocr`) | PASS (100%) | PASS (100%) |
+| OCR, GLM-OCR | FAIL (HTTP 40x), same as the API | FAIL (404/400) |
+| image (`tiiny run image`) | PASS | PASS |
+| transcription (`tiiny run asr`) | PASS (100%) | PASS (98%) |
+| writing speed, Qwen3.6-35B-A3B (`tiiny bench`) | 30.6 tok/s | 30.7 tok/s |
+
+What to know about the CLI (v0.0.5):
+- **`-f` with a chat model doesn't attach the image.** Asked to read the test image, the model answers that no image
+  was provided, and it makes up the invoice number every time. Send images through the API (`image_url`) instead.
+- **`tiiny load` doesn't return when run from a script** (no terminal attached), even with `-y`: the model is up in
+  seconds, but the command keeps waiting. In scripts, load through the API (`POST /api/v1/models/{id}/launch`) or wrap
+  the CLI in a timeout. Not checked in an interactive terminal.
+- **Output formats:** file results print as `File: <path> Content: <the API's JSON>` (OCR); transcription prints
+  `File "<path>" …: <text>`. `--json` doesn't change the OCR output.
+- `--device-address` takes a bare IP only (no port); the CLI always uses port 80. Without it, the CLI uses the address
+  it discovered, which can be an IPv6 address on Wi-Fi.
+- Speeds match the API: the CLI adds little more than its own start-up time (~0.3 s per call).
+
+## Downloading models over the USB cable
+
+**Models can't be downloaded with the Tiiny's Wi-Fi off** (tested 2026-11-04, CLI v0.0.5, TiinyOS 0.1.38, over USB
+from a PC with internet): `tiiny download <model>` refuses at once with "Tiiny needs a network connection. Use 'tiiny
+wifi connect' to scan available networks", and nothing is queued. The Tiiny downloads models from the internet itself,
+and the USB link doesn't give it a way out. Keep Wi-Fi on (any network with internet) for downloads; the USB cable is
+fine for everything else. Check it yourself with `python tools/usb_download_test.py` (turns Wi-Fi off, tries a small
+download, turns Wi-Fi back on).

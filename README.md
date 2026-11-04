@@ -23,6 +23,8 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [tools/api_test.py](tools/api_test.py) | walk through the API and check each feature really works (chat, embeddings, OCR, images, voice, music, 3D); run one section or all |
 | [tools/api_compare.py](tools/api_compare.py) | put api_test reports side by side (e.g. USB vs Wi-Fi, or before/after an update) and mark what differs |
 | [tools/model_list.py](tools/model_list.py) | regenerate docs/MODELS.md from your device's Model Store catalogue |
+| [tools/cli_compare.py](tools/cli_compare.py) | run the same tests through the Tiiny CLI and the direct API, side by side (plus `tiiny bench` vs the API's own speed) |
+| [tools/usb_download_test.py](tools/usb_download_test.py) | check whether the Tiiny can download a model over the USB cable with its Wi-Fi off (turns Wi-Fi back on afterwards) |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
 
 See also: [AntAttack's documentation map](https://github.com/garciacionet-alt/AI_Articles/tree/main/Tiiny),
@@ -44,6 +46,8 @@ python tools/api_test.py                 # full run (loads ~10 models in turn; 2
 python tools/api_test.py --list          # every check and the model it uses
 python tools/api_test.py --via usb       # label the run; then --via wifi, and compare:
 python tools/api_compare.py snapshots/api-test-*/report.json
+python tools/cli_compare.py              # CLI vs API (needs the Tiiny CLI, signed in)
+python tools/usb_download_test.py        # over the USB cable: download with Wi-Fi off?
 ```
 
 It loads the models it needs (and puts back what was loaded before), checks each answer against known inputs in
