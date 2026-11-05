@@ -128,7 +128,8 @@ Any OpenAI-compatible client works with base URL `http://<tiiny>/v1`, your key, 
 chat model is loaded, so switching models in TiinyOS needs no client change).
 
 - **Hermes:** a custom provider with that base URL, key and model `default`; mark it as supporting images if the
-  loaded model has vision. Leave the context length unset so it follows the model.
+  loaded model has vision. Leave the context length unset so it follows the model. Step by step:
+  [HERMES.md](HERMES.md).
 - **Cline:** "OpenAI Compatible" provider, same base URL/key/model.
 - **Python OpenAI SDK:** `OpenAI(base_url="http://192.168.1.50/v1", api_key="YOUR_KEY")`.
 - Anthropic-style clients: `POST /v1/messages` (accepts `x-api-key`). Ollama-style: `/api/tags`, `/api/chat`.
