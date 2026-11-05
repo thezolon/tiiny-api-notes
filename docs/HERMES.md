@@ -94,6 +94,28 @@ Restart Hermes after editing.
 - Switch which model the Tiiny runs: load another model on the Tiiny (TiinyOS or `tiiny load`). Hermes keeps using
   `default`, so nothing changes on the Hermes side.
 
+## Text to speech from Hermes (not tested from Hermes yet)
+
+Hermes's `tts` tool can use any OpenAI-compatible speech endpoint, so it can speak through the Tiiny. The catch: Hermes
+sends `voice: "alloy"` by default, and most Tiiny voice models answer that with **500 "The upstream TTS model failed"**.
+Set a voice the model has (the table in [API.md](API.md#text-to-speech-which-voice-to-send-2026-11-05-tiinyos-0138),
+or run `python tools/tts_voices.py`). In `config.yaml`:
+
+```yaml
+tts:
+  provider: openai
+  openai:
+    model: OpenMOSS-Team/MOSS-TTS-Nano-100M   # the full model id; load the model on the Tiiny first
+    voice: default                            # MOSS-TTS-Nano's only speaker
+    base_url: http://192.168.1.50/v1
+```
+
+and put your Tiiny API key in Hermes's `.env` as `VOICE_TOOLS_OPENAI_KEY=YOUR_KEY` (that's the variable Hermes's
+OpenAI speech provider reads). Other choices: `Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice` with `voice: aiden` (or serena,
+ryan, …), or `microsoft/VibeVoice-Realtime-0.5B` with `voice: en-Emma_woman`. Avoid Supertonic-3: it fails through
+the API. The request body was checked against the Tiiny directly; whether Hermes adds something the Tiiny rejects
+(a `speed`, another audio format) is untested.
+
 ## Things worth knowing
 
 - **Use the model name `default`,** not the real model id. It always means "whatever is loaded", so you can swap

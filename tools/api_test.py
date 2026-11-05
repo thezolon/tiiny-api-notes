@@ -46,6 +46,7 @@ MODELS = {
     "ocr": ["PaddlePaddle/PP-OCRv6-Small", "PaddlePaddle/PP-OCRv6-Medium", "zai-org/GLM-OCR"],
     "image": "Tongyi-MAI/Z-Image-Turbo",
     "tts": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "tts_preset": "OpenMOSS-Team/MOSS-TTS-Nano-100M",
     "asr": "Qwen/Qwen3-ASR-1.7B",
     "music": "RoyalCities/Foundation-1",
     "3d": "Tencent/Hunyuan3d-2.1",
@@ -365,6 +366,22 @@ def check_tts(t, out):
     return f"{secs:.1f} s of audio"
 
 
+def check_tts_preset(t, out):
+    """A preset-voice model: `voice` must be one of the model's own speakers (MOSS-TTS-Nano has only "default").
+    OpenAI clients send voice "alloy" by default, which these models answer with a 500."""
+    mid = MODELS["tts_preset"]
+    have = t.ok("GET", "/api/v1/models/?including_downloading=false")
+    have = have.get("data", have) if isinstance(have, dict) else have
+    if mid not in {m.get("id") for m in have}:
+        raise Skip(f"{mid} isn't downloaded (it's tiny: download it in TiinyOS to run this check)")
+    t.load(mid)
+    body = {"model": mid, "input": "This is the Tiiny API test, speaking with a preset voice.", "response_format": "wav"}
+    alloy = t.call("POST", "/v1/audio/speech", {**body, "voice": "alloy"}, raw=True, timeout=300)[0]
+    wav = t.ok("POST", "/v1/audio/speech", {**body, "voice": "default"}, raw=True, timeout=300)
+    (out / "speech-preset.wav").write_bytes(wav)
+    return f"{wav_seconds(wav):.1f} s with voice 'default' (voice 'alloy': HTTP {alloy})"
+
+
 def check_asr(t, out):
     wav_in, txt = ref_voice()
     t.load(MODELS["asr"])
@@ -426,6 +443,7 @@ CHECKS = [
     ("ocr", "ocr-GLM-OCR-direct", check_glm_ocr_direct, "zai-org/GLM-OCR"),
     ("image", "image", check_image, MODELS["image"]),
     ("audio", "audio-tts", check_tts, MODELS["tts"]),
+    ("audio", "audio-tts-preset", check_tts_preset, MODELS["tts_preset"]),
     ("audio", "audio-asr", check_asr, MODELS["asr"]),
     ("music", "music", check_music, MODELS["music"]),
     ("3d", "3d", check_3d, MODELS["3d"]),

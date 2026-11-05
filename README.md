@@ -25,6 +25,7 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [tools/api_compare.py](tools/api_compare.py) | put api_test reports side by side (e.g. USB vs Wi-Fi, or before/after an update) and mark what differs |
 | [tools/model_list.py](tools/model_list.py) | regenerate docs/MODELS.md from your device's Model Store catalogue |
 | [tools/cli_compare.py](tools/cli_compare.py) | run the same tests through the Tiiny CLI and the direct API, side by side (plus `tiiny bench` vs the API's own speed) |
+| [tools/tts_voices.py](tools/tts_voices.py) | list each text-to-speech model's voices and check which `voice` values work through the API |
 | [tools/usb_download_test.py](tools/usb_download_test.py) | check whether the Tiiny can download a model over the USB cable with its Wi-Fi off (turns Wi-Fi back on afterwards) |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
 

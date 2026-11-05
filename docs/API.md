@@ -101,7 +101,7 @@ The **device handles one request at a time**; parallel requests to different mod
 | POST | `/v1/rerank` | `{model, query, documents[]}` (not in the OpenAI spec) | **docs** |
 | POST | `/v1/images/generations` | create: `model, prompt, size "WxH", negative_prompt, seed, steps, guidance_scale, response_format`; **edit**: add `image` (one, base64/data URI) or `images` (array, up to 10) with an edit-capable model. `n` > 1 fails: one image per request. `/images/edits` and `/variations` don't exist | **tested** |
 | POST | `/v1/image/generate/stream` | image generation with progress | **app** |
-| POST | `/v1/audio/speech` | voice clone: `model, input, ref_audio` (base64 WAV), `ref_text` (both required), `language, instruct, response_format wav\|pcm\|mp3`. The Base model only clones | **tested** |
+| POST | `/v1/audio/speech` | `model` (the full id), `input`, `voice`, `language`, `instruct`, `ref_audio` (base64 WAV) + `ref_text`, `response_format wav\|pcm\|mp3`. What each model needs differs (see "Text to speech: which voice to send" below): **`voice` must be one of the model's own speakers**; OpenAI's default `alloy` gives a 500 on most models | **tested** |
 | POST | `/v1/audio/transcriptions` | multipart `model, file, language`; json/text only. Resample 48 kHz stereo to 16 kHz mono first | **tested** |
 | POST | `/v1/ocr?model=<id>` | `{"input": data URI, "response_format": "json"}` → `data[0].text` + lines. PP-OCRv6 Small/Medium work (100% on the test image, 0.1.36). **GLM-OCR doesn't work through the API on 0.1.36**: here it answers 404 `Endpoint not found`, and `/v1/chat/completions` answers 400 `does not support chat`. It works on its own port (see Model containers) | **tested** |
 | GET/POST | `/v1/music/info`, `/v1/music/sessions`, `/v1/music/generate[/wav\|/preview\|/resume]`, `/v1/music/sessions/{id}/download?format=mp3` | music (Foundation-1 loops via `/generate/wav` with `{model, prompt, config}`; SongGeneration via `/generate/preview` + `/resume`) | **tested** |
@@ -405,3 +405,26 @@ wifi connect' to scan available networks", and nothing is queued. The Tiiny down
 and the USB link doesn't give it a way out. Keep Wi-Fi on (any network with internet) for downloads; the USB cable is
 fine for everything else. Check it yourself with `python tools/usb_download_test.py` (turns Wi-Fi off, tries a small
 download, turns Wi-Fi back on).
+
+## Text to speech: which voice to send (2026-11-05, TiinyOS 0.1.38)
+
+`POST /v1/audio/speech` answers **500 "The upstream TTS model failed."** when the request doesn't suit the model, most
+often because `voice` isn't one of the model's own speakers. OpenAI clients (Hermes, Open WebUI, SDK examples) send
+`voice: "alloy"` by default, which most of these models reject. Use the full model id as `model` (`tts-1` or a short
+name gives 404 "not loaded").
+
+| model | send | `voice: "alloy"` |
+|---|---|---|
+| MOSS-TTS-Nano-100M | `voice: "default"` (its only speaker) | 500 |
+| Qwen3-TTS CustomVoice | `voice`: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian | works (falls back) |
+| Qwen3-TTS VoiceDesign | `instruct`: a description, e.g. "A calm, warm female voice." | 500 |
+| Qwen3-TTS Base, VibeVoice-1.5B | clone only: `ref_audio` + `ref_text` | 500 |
+| VibeVoice-Realtime-0.5B | `voice`: one of 61 speakers, by language: `en-Emma_woman`, `en-Carter_man`, … (`de-…`, `fr-…` for other languages) | 500 |
+| Supertonic-3 | **broken through the API**: every request fails, because the API passes the full id `Supertone/supertonic-3` and the model's server only accepts `Supertonic-3`. On its own port (Wi-Fi/LAN) it works with `model: "Supertonic-3"` and `voice` F1-F5 / M1-M5 | 500 |
+
+- VibeVoice-Realtime can fail the first request after it loads, and fails short text with a speaker of another
+  language: retry once, and match the speaker to the text's language.
+- `response_format: "mp3"` works wherever wav works.
+- Kokoro-82M isn't covered yet (not downloaded on the test device).
+- List the voices on your own Tiiny and check each model: `python tools/tts_voices.py` (needs a Wi-Fi/LAN address:
+  the voice lists come from each model's own port). The harness checks one preset voice: `api_test.py audio-tts-preset`.
