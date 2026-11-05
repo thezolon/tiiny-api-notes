@@ -2,7 +2,8 @@
 
 Hermes Agent (Nous Research) works with any OpenAI-compatible endpoint, and the Tiiny has one. This walks through
 adding it. Tested with Hermes Desktop on Windows and TiinyOS 0.1.38: chat, tool calling and images work. The Hermes
-steps are the same on macOS and Linux (from Hermes's own docs; not tested there by me).
+steps are the same on Linux (config path, `custom_providers` format and commands checked on Hermes Agent v0.22.2 on
+Ubuntu; a live chat from Linux not tested) and, per Hermes's own docs, on macOS.
 
 ## What you need
 
@@ -46,6 +47,9 @@ Close any Hermes chat first, then in a terminal:
 ```bash
 hermes model
 ```
+
+(Linux/macOS: if the shell says `hermes: command not found`, it's in `~/.local/bin`: run `~/.local/bin/hermes model`
+or add that folder to your PATH.)
 
 Choose **Custom endpoint (self-hosted / VLLM / etc.)** and enter:
 
