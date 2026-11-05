@@ -1,7 +1,8 @@
 # Use the Tiiny as a provider in Hermes Agent
 
 Hermes Agent (Nous Research) works with any OpenAI-compatible endpoint, and the Tiiny has one. This walks through
-adding it. Tested with Hermes Desktop on Windows and TiinyOS 0.1.38: chat, tool calling and images work.
+adding it. Tested with Hermes Desktop on Windows and TiinyOS 0.1.38: chat, tool calling and images work. The Hermes
+steps are the same on macOS and Linux (from Hermes's own docs; not tested there by me).
 
 ## What you need
 
@@ -9,7 +10,8 @@ adding it. Tested with Hermes Desktop on Windows and TiinyOS 0.1.38: chat, tool 
    - Over Wi-Fi/LAN: the device's IP address on your network, e.g. `192.168.1.50` (TiinyOS shows it, or your router
      does).
    - Over the USB cable: the USB address TiinyOS shows, e.g. `172.20.31.109`. It's fixed per device, so it doesn't
-     change when you move between networks.
+     change when you move between networks. Tested on Windows only; on macOS/Linux, use the Wi-Fi/LAN address if the
+     USB address doesn't answer.
 2. **Your API key:** TiinyOS → **Settings → API Key**.
 3. **A chat model loaded** on the Tiiny (TiinyOS, `tiiny load <model>`, or the API). Hermes uses whatever is loaded
    through the model name `default`.
@@ -23,7 +25,17 @@ curl -H "Authorization: Bearer YOUR_KEY" http://192.168.1.50/v1/models
 You should see a list with your loaded model and the alias `default`. If every call answers **502**, the Tiiny was
 restarted and is still locked: open the TiinyOS app once or run `tiiny login`, then try again.
 
-To check chat, tools and images in one go: `TIINY_URL=http://192.168.1.50 TIINY_KEY=YOUR_KEY python tools/api_test.py chat`.
+To check chat, tools and images in one go, run the test script from this repo:
+
+```bash
+# macOS / Linux
+TIINY_URL=http://192.168.1.50 TIINY_KEY=YOUR_KEY python3 tools/api_test.py chat
+```
+
+```powershell
+# Windows (PowerShell)
+$env:TIINY_URL = "http://192.168.1.50"; $env:TIINY_KEY = "YOUR_KEY"; python tools/api_test.py chat
+```
 
 ## Step 2: add the provider
 
