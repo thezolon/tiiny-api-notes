@@ -26,6 +26,7 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [tools/api_compare.py](tools/api_compare.py) | put api_test reports side by side (e.g. USB vs Wi-Fi, or before/after an update) and mark what differs |
 | [tools/model_list.py](tools/model_list.py) | regenerate docs/MODELS.md from your device's Model Store catalogue |
 | [tools/cli_compare.py](tools/cli_compare.py) | run the same tests through the Tiiny CLI and the direct API, side by side (plus `tiiny bench` vs the API's own speed) |
+| [tools/jev_bench.py](tools/jev_bench.py) + [jev_eval_build.py](tools/jev_eval_build.py) | benchmark the Jev / System One models: accuracy, calibration and speed on a fixed set of public-dataset items (8 tasks, 1,600 items) |
 | [tools/speed_test.py](tools/speed_test.py) | speed sweeps: chat reading/writing speed at 1K-128K context, and Jev (`/v1/systemone`) time per text size and number of questions |
 | [tools/download_models.py](tools/download_models.py) | download models from a script and know when they're done (works around the CLI never returning) |
 | [tools/tts_voices.py](tools/tts_voices.py) | list each text-to-speech model's voices and check which `voice` values work through the API |
