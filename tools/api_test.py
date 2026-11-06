@@ -493,6 +493,26 @@ def device():
     return url, key or ""
 
 
+def model_versions(t, mids):
+    """Store version and update flag of each installed model in `mids` (models not installed are left out)."""
+    have = t.ok("GET", "/api/v1/models/?including_downloading=false")
+    have = have.get("data", have) if isinstance(have, dict) else have
+    return {m["id"]: {"version": m.get("version"), "need_update": bool(m.get("need_update"))}
+            for m in have if m.get("id") in set(mids)}
+
+
+def require_current(t, mids, allow_outdated):
+    """Results from an old model build mislead: stop if a model the run uses has an update waiting."""
+    versions = model_versions(t, mids)
+    old = sorted(m for m, v in versions.items() if v["need_update"])
+    if old and not allow_outdated:
+        sys.exit("These models have a newer version in the Model Store; update them first (TiinyOS > Models, or "
+                 "remove and download again), or rerun with --allow-outdated:\n  " + "\n  ".join(old))
+    for m in old:
+        print(f"note: {m} is outdated (version {versions[m]['version']}), results may not match the current build")
+    return versions
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("only", nargs="*", help="sections or check names to run (default: everything)")
@@ -500,6 +520,7 @@ def main():
     ap.add_argument("--list", action="store_true", help="list the checks and exit")
     ap.add_argument("--no-restore", action="store_true", help="don't reload the models that were running before")
     ap.add_argument("--via", default="", help="how this computer reaches the Tiiny, for the report: usb, wifi, lan (compare runs with tools/api_compare.py)")
+    ap.add_argument("--allow-outdated", action="store_true", help="run even if a model the run uses has an update waiting")
     a = ap.parse_args()
     known = set(SECTIONS) | {c[1] for c in CHECKS}
     wanted = [w for spec in a.only for w in spec.split(",") if w]
@@ -516,6 +537,7 @@ def main():
     t = Tiiny(*device())
     if t.call("GET", "/api/v1/models/running", timeout=15)[0] == 502:  # after a restart, until the app is opened once
         sys.exit("The Tiiny looks locked after a restart: run `tiiny login` or open the TiinyOS app, then rerun.")
+    versions = require_current(t, [c[3] for c in checks if c[3]], a.allow_outdated)
     stamp = time.strftime("%Y%m%d-%H%M%S")
     out = HERE.parent / "snapshots" / f"api-test-{stamp}"
     out.mkdir(parents=True, exist_ok=True)
@@ -551,7 +573,7 @@ def main():
     failed = sum(r["status"] == "FAIL" for r in results)
     print(f"\n{passed} passed, {failed} failed, {len(results) - passed - failed} skipped. Report and outputs: {out}")
     (out / "report.json").write_text(json.dumps({"when": stamp, "via": a.via or "unknown", "tiiny_os": tiiny_os, "ran": wanted or ["all"],
-                                                  "results": results}, indent=1))
+                                                  "model_versions": versions, "results": results}, indent=1))
     sys.exit(1 if failed else 0)
 
 

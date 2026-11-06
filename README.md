@@ -48,6 +48,7 @@ python tools/api_test.py ocr             # one section: info chat embeddings ocr
 python tools/api_test.py                 # full run (loads ~10 models in turn; 20-40 minutes)
 python tools/api_test.py --list          # every check and the model it uses
 python tools/api_test.py --via usb       # label the run; then --via wifi, and compare:
+# api_test.py and speed_test.py stop if a model they use has an update waiting (--allow-outdated to run anyway)
 python tools/api_compare.py snapshots/api-test-*/report.json
 python tools/cli_compare.py              # CLI vs API (needs the Tiiny CLI, signed in)
 python tools/usb_download_test.py        # over the USB cable: download with Wi-Fi off?

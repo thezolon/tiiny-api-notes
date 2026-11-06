@@ -109,6 +109,7 @@ def main():
     ap.add_argument("--model", action="append", help="model id (repeatable); default: chat model / all downloaded Jev models")
     ap.add_argument("--ctx", help="context sizes, e.g. 1k,4k,16k (default chat 1k..128k, jev 1k,4k,16k)")
     ap.add_argument("--questions", default="1,8,32,64", help="jev: question counts (max 64)")
+    ap.add_argument("--allow-outdated", action="store_true", help="run even if a model has an update waiting")
     a = ap.parse_args()
     t = at.Tiiny(*at.device())
     if t.call("GET", "/api/v1/models/running", timeout=15)[0] == 502:
@@ -122,6 +123,7 @@ def main():
         models = sorted(m for m in have if (info.get(m) or {}).get("type") == "Text Classification")
         if not models:
             raise SystemExit("No Jev / Text Classification models downloaded (e.g. `tiiny download vllm-sr/d3-lite`).")
+    versions = at.require_current(t, models, a.allow_outdated)
     ctxs = [size(x) for x in (a.ctx or ("1k,4k,16k,32k,64k,128k" if a.mode == "chat" else "1k,4k,16k")).split(",")]
     counts = [min(64, int(x)) for x in a.questions.split(",")]
     stamp = time.strftime("%Y%m%d-%H%M%S")
@@ -129,7 +131,7 @@ def main():
     out.mkdir(parents=True, exist_ok=True)
     tiiny_os = t.ok("GET", "/api/v1/sys/device_info").get("tiiny_os")
     before = set(t.running())
-    report = {"when": stamp, "tiiny_os": tiiny_os, "mode": a.mode, "models": {}}
+    report = {"when": stamp, "tiiny_os": tiiny_os, "mode": a.mode, "model_versions": versions, "models": {}}
     try:
         for m in models:
             if m not in have:
