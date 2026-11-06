@@ -50,6 +50,7 @@ MODELS = {
     "asr": "Qwen/Qwen3-ASR-1.7B",
     "music": "RoyalCities/Foundation-1",
     "3d": "Tencent/Hunyuan3d-2.1",
+    "classify": ["vllm-sr/d3-lite", "PelaAI/KnowLine-4B-Gen5.5"],  # Jev / System One models (TiinyOS 0.1.39)
 }
 
 
@@ -382,6 +383,39 @@ def check_tts_preset(t, out):
     return f"{wav_seconds(wav):.1f} s with voice 'default' (voice 'alloy': HTTP {alloy})"
 
 
+def downloaded(t, mid):
+    have = t.ok("GET", "/api/v1/models/?including_downloading=false")
+    have = have.get("data", have) if isinstance(have, dict) else have
+    return mid in {m.get("id") for m in have}
+
+
+SYSTEMONE_STATE = "I was charged twice for my subscription this month. Please refund the extra charge."
+SYSTEMONE_QUESTIONS = {
+    "is_billing": {"type": "noul", "instructions": "Is this message about billing?"},
+    "topic": {"type": "choice", "instructions": "What is this message about?",
+              "criteria": {"billing": "payments, charges, refunds", "shipping": "delivery of orders",
+                           "technical": "bugs, errors, setup"}},
+    "urgency": {"type": "score", "instructions": "How urgent is this message?",
+                "criteria": ["not urgent", "somewhat urgent", "very urgent"]},
+}
+
+
+def make_systemone_check(mid):
+    """Jev / TypeSafe System One: typed questions about a text, answered with probabilities (POST /v1/systemone)."""
+    def check(t, out):
+        if not downloaded(t, mid):
+            raise Skip(f"{mid} isn't downloaded (download it in TiinyOS or with `tiiny download {mid}`)")
+        t.load(mid)
+        res = t.ok("POST", "/v1/systemone", {"model": mid, "state": SYSTEMONE_STATE, "questions": SYSTEMONE_QUESTIONS},
+                   timeout=300)
+        a = res.get("answers") or {}
+        yes, topic, score = a.get("is_billing", {}), a.get("topic", {}), a.get("urgency", {})
+        if (yes.get("noul") or 0) < 0.5 or topic.get("choice") != "billing" or "score" not in score:
+            raise Fail(f"answers {json.dumps(a)[:200]}")
+        return f"billing? {yes['noul']:.2f}, topic {topic['choice']} ({topic.get('confidence', 0):.2f}), urgency {score['score']:.1f}/2"
+    return check
+
+
 def check_asr(t, out):
     wav_in, txt = ref_voice()
     t.load(MODELS["asr"])
@@ -445,6 +479,7 @@ CHECKS = [
     ("audio", "audio-tts", check_tts, MODELS["tts"]),
     ("audio", "audio-tts-preset", check_tts_preset, MODELS["tts_preset"]),
     ("audio", "audio-asr", check_asr, MODELS["asr"]),
+    *[("classify", f"classify-{m.split('/')[1]}", make_systemone_check(m), m) for m in MODELS["classify"]],
     ("music", "music", check_music, MODELS["music"]),
     ("3d", "3d", check_3d, MODELS["3d"]),
 ]

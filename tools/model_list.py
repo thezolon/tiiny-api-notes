@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs" / "MODELS.md"
 # Licenses, read by hand from each model's Hugging Face repo (or its base model's): see the file for sources
 LICENSES = json.loads((ROOT / "tools" / "model_licenses.json").read_text("utf-8"))
-LICENSES_CHECKED = "2026-11-03"
+LICENSES_CHECKED = "2026-11-06"
 HEADER = "| model | params | NPU | size | context | can do | license |"
 # Store types, grouped the way people ask about them
 GROUPS = [
@@ -33,6 +33,7 @@ GROUPS = [
     ("Video", ["Text-to-Video", "Image-to-Video"]),
     ("Embeddings (for search and the vault)", ["Text Embedding"]),
     ("Rerankers", ["Text Reranking"]),
+    ("Classifiers (Jev / System One, `POST /v1/systemone`)", ["Text Classification"]),
 ]
 
 

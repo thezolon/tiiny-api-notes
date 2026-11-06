@@ -353,7 +353,13 @@ Numbers from llama.cpp's own `timings` in the reply (`predicted_per_second`, `pr
 | gpt-oss-20b | MoE, ~3.6B active, 10.3 GB | 24.1 | ~1,300 | ~5 s |
 | Qwen3.5-9B | dense, 6.2 GB | 18.4 | 1,200-1,420 | ~4.5 s |
 | Qwen3-4B-Instruct-2507 | dense, 2.3 GB | 18.1 | 1,650-1,950 | ~4 s |
-| Qwen3.8-27B | dense, 15.4 GB | 6.2 | ~500 | ~13 s |
+| Qwen3.8-27B (11-01 build) | dense, 15.4 GB | 6.2 | ~500 | ~13 s |
+| Qwen3.8-27B (11-06 build, 0.1.39) | dense, 15.9 GB | **12.6** | 350-500 | ~13 s |
+
+**Qwen3.8-27B got twice as fast:** the Model Store updated it (15.4 → 15.9 GB) and it now writes ~12.6 tok/s at
+short context. Reading every weight for each token can't explain that (it would need ~200 GB/s), so *inferred:* the
+new build predicts several tokens per step (speculative/multi-token decoding). The bandwidth note below is from the
+11-01 build.
 
 What it means:
 - **The MoE models are the fast ones.** Qwen3.6-35B-A3B writes 4x faster than the dense 27B and is the best
@@ -368,6 +374,27 @@ What it means:
 - **Rough rule for a big dense model:** writing speed ≈ 96 GB/s ÷ its size in GB (a 30 GB dense model would write
   ~3 tok/s), but small dense models don't go above ~18 tok/s. MoE models come in at about half of what the same rule
   gives for their active part (35B-A3B: ~1.5 GB active → rule says ~64, measured 27). A rough estimate, not a law.
+
+### Long prompts (2026-11-06, TiinyOS 0.1.39)
+
+How speed changes with prompt length: one request per size, a fresh prompt each time, prompt caching off, a
+128-token answer. Run it yourself: `python tools/speed_test.py chat --model <id>` (sizes with `--ctx 1k,8k,32k`).
+
+| context | Qwen3.6-35B-A3B: reading / writing | first word after | Qwen3.8-27B: reading / writing | first word after |
+|---|---|---|---|---|
+| 1K | 723 / 27.0 tok/s | 1.6 s | 500 / 12.6 tok/s | 2.3 s |
+| 4K | 728 / 26.0 | 6.3 s | 351 / 12.6 | 13 s |
+| 16K | 710 / 24.8 | 26 s | 440 / 14.2 | 42 s |
+| 32K | 667 / 22.7 | 57 s | 416 / 11.5 | 91 s |
+| 64K | 600 / 19.4 | 2 min 8 s | 353 / 8.9 | 3 min 38 s |
+| 128K | 498 / 15.5 | 5 min 12 s | **fails: 504** | - |
+
+- **Long prompts mostly cost waiting time.** A full 128K prompt is read for ~5 minutes before the first word (35B-A3B);
+  writing slows down less (27 → 15.5 tok/s). In a chat that keeps growing, the earlier part is cached, so each turn
+  only pays for the new text (the sweep turns caching off on purpose).
+- **The API gives up on very slow first words:** Qwen3.8-27B at 128K answered `504 "Upstream model server timed out."`
+  (it would need ~7 minutes just to read). The 35B-A3B's 5 min 12 s got through, so the limit is somewhere above
+  that. Use the MoE model for very long prompts.
 
 ## Tiiny CLI vs the direct API (CLI v0.0.5, 2026-11-04, TiinyOS 0.1.38)
 
@@ -390,7 +417,9 @@ What to know about the CLI (v0.0.5):
   was provided, and it makes up the invoice number every time. Send images through the API (`image_url`) instead.
 - **`tiiny load` doesn't return when run from a script** (no terminal attached), even with `-y`: the model is up in
   seconds, but the command keeps waiting. In scripts, load through the API (`POST /api/v1/models/{id}/launch`) or wrap
-  the CLI in a timeout. Not checked in an interactive terminal.
+  the CLI in a timeout. Not checked in an interactive terminal. **`tiiny download` does the same** (seen 2026-11-06,
+  CLI v0.0.5): the download completes (the API shows `status: downloaded`, 100%) but the command never returns. In
+  scripts, start it, watch `GET /api/v1/models/?including_downloading=true` for `downloaded`, then stop the CLI.
 - **Output formats:** file results print as `File: <path> Content: <the API's JSON>` (OCR); transcription prints
   `File "<path>" …: <text>`. `--json` doesn't change the OCR output.
 - `--device-address` takes a bare IP only (no port); the CLI always uses port 80. Without it, the CLI uses the address
@@ -428,3 +457,50 @@ name gives 404 "not loaded").
 - Kokoro-82M isn't covered yet (not downloaded on the test device).
 - List the voices on your own Tiiny and check each model: `python tools/tts_voices.py` (needs a Wi-Fi/LAN address:
   the voice lists come from each model's own port). The harness checks one preset voice: `api_test.py audio-tts-preset`.
+
+## Classify text: Jev / System One (2026-11-06, TiinyOS 0.1.39)
+
+TiinyOS 0.1.39 adds **Text Classification** models that speak TypeSafe's **Jev / "System One"** API:
+`POST /v1/systemone` (**tested**, through port 80, over USB and Wi-Fi). Instead of writing an answer, the model reads a
+text (`state`) and answers typed questions with probabilities, in one read per question and no text generation.
+Recipe: [RECIPES.md](RECIPES.md#classify-text-with-a-jev-model-yesno-pick-one-score). Format (from TypeSafe's API
+docs, and what the Tiiny returns):
+
+- Request: `model` (full id), `state` (string, object or array), `questions`: an object of named questions, up to 64:
+  - `{"type": "noul", "instructions": "...", "criteria": {"true": "...", "false": "..."}}` (yes/no; criteria optional)
+  - `{"type": "choice", "instructions": "...", "criteria": {"name": "description", ...}}` (pick one of 1-255)
+  - `{"type": "score", "instructions": "...", "criteria": ["level 0", "level 1", ...]}` (ordered, 1-10 levels)
+- Response: `answers` keyed by your question names: `noul` (probability of yes), `choice` + `confidence` +
+  `probabilities`, or `score` (expected level) + `legend` + `probabilities`; plus `usage.input_tokens`.
+
+| model | params | NPU | context limit |
+|---|---|---|---|
+| `vllm-sr/d3-lite` | 0.8B | 7% | 16K |
+| `PelaAI/KnowLine-4B-Gen5.5` | 4B | 17% | 256K |
+| `vllm-sr/d3-edge` | 0.6B | 21% | 16K |
+| `vllm-sr/d3-nano` | 2B | 25% | 16K |
+| `vllm-sr/d3-mini` | 4B | 26% | 16K |
+| `vllm-sr/d3-flash` | 9B | 34% | 16K |
+| `PelaAI/KnowLine-35B-A3B-Gen1.5` | 35B | 48% | 256K |
+
+Tested: d3-lite and KnowLine-4B (check: `python tools/api_test.py classify`). d3-lite itself runs on llama.cpp.
+
+**Speed** (`python tools/speed_test.py jev`; a fresh text for every request, yes/no questions, whole-request time):
+
+| text size | d3-lite: 1 / 8 / 64 questions | KnowLine-4B: 1 / 8 / 64 questions |
+|---|---|---|
+| 1K tokens | 0.4 s / 2.4 s / 18 s | 1.4 s / 11 s / 34 s |
+| 4K | 1.9 s / 14 s / 114 s | 2.4 s / 5.4 s / 29 s |
+| 16K | (over its limit) | 9.3 s / 13 s / 43 s |
+| 64K | - | 55 s / 61 s / 113 s |
+| 128K | - | 2 min 37 s / 2 min 48 s / **fails: 504** |
+
+- **d3 models read the whole text again for every question** (~2,500-4,200 tok/s): time grows with text size ×
+  number of questions. Fast for short texts and a few questions.
+- **KnowLine reuses the text across questions** once it's longer than ~3,000 tokens: the first read is the cost
+  (~1,000-2,000 tok/s), extra questions are nearly free (64 questions on a 64K text: 113 s vs 55 s for one). Below
+  ~3,000 tokens it deliberately reads the text twice for accuracy (its store description says so; `usage` shows
+  double the tokens), and each question costs a full read.
+- `usage.input_tokens` counts the text once per question (64 questions × 4K = ~300K), even when the model reuses it.
+- **Very large requests time out:** KnowLine-4B with a 128K text and 64 questions answered
+  `504 "The decision model timed out."` Split big batches.

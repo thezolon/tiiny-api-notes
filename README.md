@@ -21,10 +21,11 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [docs/HERMES.md](docs/HERMES.md) | step by step: add the Tiiny as a provider in Hermes Agent |
 | [docs/MODELS.md](docs/MODELS.md) | every model in the Tiiny Model Store: type, size, NPU share, context, what it can do |
 | [docs/PRIVACY.md](docs/PRIVACY.md) | what the device keeps about your chats, and what you can delete through the API |
-| [tools/api_test.py](tools/api_test.py) | walk through the API and check each feature really works (chat, embeddings, OCR, images, voice, music, 3D); run one section or all |
+| [tools/api_test.py](tools/api_test.py) | walk through the API and check each feature really works (chat, embeddings, OCR, images, voice, Jev classification, music, 3D); run one section or all |
 | [tools/api_compare.py](tools/api_compare.py) | put api_test reports side by side (e.g. USB vs Wi-Fi, or before/after an update) and mark what differs |
 | [tools/model_list.py](tools/model_list.py) | regenerate docs/MODELS.md from your device's Model Store catalogue |
 | [tools/cli_compare.py](tools/cli_compare.py) | run the same tests through the Tiiny CLI and the direct API, side by side (plus `tiiny bench` vs the API's own speed) |
+| [tools/speed_test.py](tools/speed_test.py) | speed sweeps: chat reading/writing speed at 1K-128K context, and Jev (`/v1/systemone`) time per text size and number of questions |
 | [tools/tts_voices.py](tools/tts_voices.py) | list each text-to-speech model's voices and check which `voice` values work through the API |
 | [tools/usb_download_test.py](tools/usb_download_test.py) | check whether the Tiiny can download a model over the USB cable with its Wi-Fi off (turns Wi-Fi back on afterwards) |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
@@ -43,13 +44,14 @@ python tools/api_snapshot.py --check    # later: what changed?
 Something not working? Test just that part, or everything:
 
 ```bash
-python tools/api_test.py ocr             # one section: info chat embeddings ocr image audio music 3d
+python tools/api_test.py ocr             # one section: info chat embeddings ocr image audio classify music 3d
 python tools/api_test.py                 # full run (loads ~10 models in turn; 20-40 minutes)
 python tools/api_test.py --list          # every check and the model it uses
 python tools/api_test.py --via usb       # label the run; then --via wifi, and compare:
 python tools/api_compare.py snapshots/api-test-*/report.json
 python tools/cli_compare.py              # CLI vs API (needs the Tiiny CLI, signed in)
 python tools/usb_download_test.py        # over the USB cable: download with Wi-Fi off?
+python tools/speed_test.py chat           # speed at 1K..128K context (also: speed_test.py jev)
 ```
 
 It loads the models it needs (and puts back what was loaded before), checks each answer against known inputs in

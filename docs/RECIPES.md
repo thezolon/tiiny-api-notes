@@ -122,6 +122,28 @@ curl -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" $TIINY/
 `enable_thinking: false` turns reasoning off (gpt-oss models want `"reasoning_effort": "low"` instead). The
 device serves one request at a time.
 
+## Classify text with a Jev model (yes/no, pick one, score)
+
+The Text Classification models (d3, KnowLine; TiinyOS 0.1.39+) answer typed questions about a text with
+probabilities instead of writing an answer: TypeSafe's Jev / "System One" API. Load one first (e.g. `vllm-sr/d3-lite`).
+
+```bash
+curl -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" $TIINY/v1/systemone -d '{
+  "model": "vllm-sr/d3-lite",
+  "state": "I was charged twice for my subscription this month. Please refund the extra charge.",
+  "questions": {
+    "is_billing": {"type": "noul", "instructions": "Is this message about billing?"},
+    "topic": {"type": "choice", "instructions": "What is this message about?",
+              "criteria": {"billing": "payments, charges, refunds", "shipping": "delivery of orders", "technical": "bugs, errors"}},
+    "urgency": {"type": "score", "instructions": "How urgent is this message?",
+                "criteria": ["not urgent", "somewhat urgent", "very urgent"]}}}'
+```
+
+You get `answers.is_billing.noul` (probability of yes, here 0.99), `answers.topic.choice` ("billing") with
+`probabilities` for each option and a `confidence`, and `answers.urgency.score` (expected level, 0 to 2) with
+`probabilities` per level. Up to 64 questions per request; `state` can be a string, an object or an array. Speeds and
+model choice: [API.md](API.md#classify-text-jev--system-one-2026-11-06-tiinyos-0139).
+
 ## Use it from other apps
 
 Any OpenAI-compatible client works with base URL `http://<tiiny>/v1`, your key, and model **`default`** (whatever

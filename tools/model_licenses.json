@@ -363,5 +363,47 @@
  "Qwen/Qwen3-Vl-Reranker-8b": {
   "license": "Apache-2.0",
   "source": "Qwen/Qwen3-Vl-Reranker-8b"
+ },
+ "openbmb/VoxCPM2": {
+  "license": "Apache-2.0",
+  "source": "openbmb/VoxCPM2"
+ },
+ "vllm-sr/d3-edge": {
+  "license": "Apache-2.0",
+  "source": "vllm-sr/d3-edge"
+ },
+ "vllm-sr/d3-lite": {
+  "license": "Apache-2.0",
+  "source": "vllm-sr/d3-lite"
+ },
+ "vllm-sr/d3-nano": {
+  "license": "Apache-2.0",
+  "source": "vllm-sr/d3-nano"
+ },
+ "vllm-sr/d3-mini": {
+  "license": "Apache-2.0",
+  "source": "vllm-sr/d3-mini"
+ },
+ "vllm-sr/d3-flash": {
+  "license": "Apache-2.0",
+  "source": "vllm-sr/d3-flash"
+ },
+ "PelaAI/KnowLine-4B-Gen5.5": {
+  "license": "Apache-2.0",
+  "source": "PelaAI/KnowLine-4B-Gen5.5"
+ },
+ "PelaAI/KnowLine-35B-A3B-Gen1.5": {
+  "license": "Apache-2.0",
+  "source": "PelaAI/KnowLine-35B-A3B-Gen1.5"
+ },
+ "k2-fsa/OmniVoice": {
+  "license": "CC-BY-NC",
+  "source": "k2-fsa/OmniVoice",
+  "limit": "non-commercial (the model weights; the code is Apache-2.0)"
+ },
+ "krea/Krea-2-Turbo": {
+  "license": "Krea 2 Community",
+  "source": "krea/Krea-2-Turbo",
+  "limit": "commercial use only below USD 1M annual revenue (worldwide, no regions excluded)"
  }
 }
