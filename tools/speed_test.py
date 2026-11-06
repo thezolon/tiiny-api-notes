@@ -65,8 +65,8 @@ def sweep_chat(t, model, ctxs, limit):
         code, res = t.call("POST", "/v1/chat/completions", body, timeout=3600)
         wall = time.time() - t0
         if code >= 300:
-            print(f"  {c // 1024:>4}K  HTTP {code}: {json.dumps(res)[:120]}", flush=True)
-            rows.append({"ctx": c, "error": code})
+            print(f"  {c // 1024:>4}K  HTTP {code} after {wall:.0f} s: {json.dumps(res)[:120]}", flush=True)
+            rows.append({"ctx": c, "error": code, "after_s": round(wall, 1)})
             continue
         tm = res.get("timings") or {}
         row = {"ctx": c, "prompt_tokens": tm.get("prompt_n") or res.get("usage", {}).get("prompt_tokens"),
@@ -91,8 +91,8 @@ def sweep_jev(t, model, ctxs, counts, limit):
             code, res = t.call("POST", "/v1/systemone", {"model": model, "state": state, "questions": qs}, timeout=3600)
             wall = time.time() - t0
             if code >= 300:
-                print(f"  {c // 1024:>4}K x {n:>2} questions  HTTP {code}: {json.dumps(res)[:120]}", flush=True)
-                rows.append({"ctx": c, "questions": n, "error": code})
+                print(f"  {c // 1024:>4}K x {n:>2} questions  HTTP {code} after {wall:.0f} s: {json.dumps(res)[:120]}", flush=True)
+                rows.append({"ctx": c, "questions": n, "error": code, "after_s": round(wall, 1)})
                 continue
             tok = (res.get("usage") or {}).get("input_tokens")
             row = {"ctx": c, "questions": n, "input_tokens": tok, "total_s": round(wall, 2),

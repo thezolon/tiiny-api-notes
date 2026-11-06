@@ -50,7 +50,7 @@ MODELS = {
     "asr": "Qwen/Qwen3-ASR-1.7B",
     "music": "RoyalCities/Foundation-1",
     "3d": "Tencent/Hunyuan3d-2.1",
-    "classify": ["vllm-sr/d3-lite", "PelaAI/KnowLine-4B-Gen5.5"],  # Jev / System One models (TiinyOS 0.1.39)
+    "classify": ["vllm-sr/d3-edge", "vllm-sr/d3-lite", "PelaAI/KnowLine-4B-Gen5.5"],  # Jev / System One models (TiinyOS 0.1.39)
 }
 
 

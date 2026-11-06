@@ -387,14 +387,15 @@ How speed changes with prompt length: one request per size, a fresh prompt each 
 | 16K | 710 / 24.8 | 26 s | 440 / 14.2 | 42 s |
 | 32K | 667 / 22.7 | 57 s | 416 / 11.5 | 91 s |
 | 64K | 600 / 19.4 | 2 min 8 s | 353 / 8.9 | 3 min 38 s |
-| 128K | 498 / 15.5 | 5 min 12 s | **fails: 504** | - |
+| 128K | 498 / 15.5 | 5 min 12 s | 264 / 8.3 (one run of two; the other failed: 504) | 9 min 48 s |
 
 - **Long prompts mostly cost waiting time.** A full 128K prompt is read for ~5 minutes before the first word (35B-A3B);
   writing slows down less (27 → 15.5 tok/s). In a chat that keeps growing, the earlier part is cached, so each turn
   only pays for the new text (the sweep turns caching off on purpose).
-- **The API gives up on very slow first words:** Qwen3.8-27B at 128K answered `504 "Upstream model server timed out."`
-  (it would need ~7 minutes just to read). The 35B-A3B's 5 min 12 s got through, so the limit is somewhere above
-  that. Use the MoE model for very long prompts.
+- **A chat request has about 10 minutes, then the API gives up** with `504 "Upstream model server timed out."`
+  Qwen3.8-27B at 128K sits right on that edge: one run finished in 599.0 s (first word after 9 min 48 s), an
+  earlier one failed with the 504. Keep long prompts on the MoE model (5 min 19 s at 128K), or stream so you see the
+  answer as it comes; whether streaming avoids the cut-off isn't tested yet.
 
 ## Tiiny CLI vs the direct API (CLI v0.0.5, 2026-11-04, TiinyOS 0.1.38)
 
@@ -437,26 +438,36 @@ download, turns Wi-Fi back on).
 
 ## Text to speech: which voice to send (2026-11-05, TiinyOS 0.1.38)
 
+*Updated 2026-11-06 for TiinyOS 0.1.39. Every model's full voice list: [VOICES.md](VOICES.md).*
+
 `POST /v1/audio/speech` answers **500 "The upstream TTS model failed."** when the request doesn't suit the model, most
 often because `voice` isn't one of the model's own speakers. OpenAI clients (Hermes, Open WebUI, SDK examples) send
 `voice: "alloy"` by default, which most of these models reject. Use the full model id as `model` (`tts-1` or a short
 name gives 404 "not loaded").
 
-| model | send | `voice: "alloy"` |
-|---|---|---|
-| MOSS-TTS-Nano-100M | `voice: "default"` (its only speaker) | 500 |
-| Qwen3-TTS CustomVoice | `voice`: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian | works (falls back) |
-| Qwen3-TTS VoiceDesign | `instruct`: a description, e.g. "A calm, warm female voice." | 500 |
-| Qwen3-TTS Base, VibeVoice-1.5B | clone only: `ref_audio` + `ref_text` | 500 |
-| VibeVoice-Realtime-0.5B | `voice`: one of 61 speakers, by language: `en-Emma_woman`, `en-Carter_man`, … (`de-…`, `fr-…` for other languages) | 500 |
-| Supertonic-3 | **broken through the API**: every request fails, because the API passes the full id `Supertone/supertonic-3` and the model's server only accepts `Supertonic-3`. On its own port (Wi-Fi/LAN) it works with `model: "Supertonic-3"` and `voice` F1-F5 / M1-M5 | 500 |
+**Simplest fix: leave `voice` out.** On 0.1.39 a request with no `voice` works on 7 of the 9 voice models (each uses
+its default voice); only Qwen3-TTS Base (clone only) and Qwen3-TTS VoiceDesign (needs `instruct`) refuse it.
 
+| model | to pick a voice, send | `voice: "alloy"` | no `voice` |
+|---|---|---|---|
+| MOSS-TTS-Nano-100M | `voice: "default"` (its only speaker) | 500 | works |
+| Qwen3-TTS CustomVoice | `voice`: aiden, dylan, eric, ono_anna, ryan, serena, sohee, uncle_fu, vivian | works (falls back) | works |
+| Qwen3-TTS VoiceDesign | `instruct`: a description, e.g. "A calm, warm female voice." | 500 | 500 |
+| Qwen3-TTS Base | clone only: `ref_audio` + `ref_text` | 500 | 500 |
+| VibeVoice-1.5B | clone: `ref_audio` + `ref_text` (no presets) | 500 | works |
+| VibeVoice-Realtime-0.5B | `voice`: one of 61, by language: `en-Emma_woman`, `en-Carter_man`, … (`de-…`, `fr-…`) | 500 | works |
+| Supertonic-3 | `voice`: F1-F5, M1-M5 | 500 | works |
+| Kokoro-82M | `voice`: one of 42, e.g. `af_heart`, `am_michael`, `bf_emma` (note: `af_alloy` exists, plain `alloy` doesn't) | 500 | works |
+| OmniVoice | voice design: short `instruct` such as "female" works; a sentence like "A calm, warm female voice." gave 500 | 500 | works |
+
+- **Supertonic-3 was broken through the API on 0.1.38** (the API passed its full id, which its server rejected);
+  **fixed in 0.1.39**.
 - VibeVoice-Realtime can fail the first request after it loads, and fails short text with a speaker of another
   language: retry once, and match the speaker to the text's language.
-- `response_format: "mp3"` works wherever wav works.
-- Kokoro-82M isn't covered yet (not downloaded on the test device).
-- List the voices on your own Tiiny and check each model: `python tools/tts_voices.py` (needs a Wi-Fi/LAN address:
-  the voice lists come from each model's own port). The harness checks one preset voice: `api_test.py audio-tts-preset`.
+- `response_format: "mp3"` works wherever wav works. Not checked yet: VoxCPM2 (not downloaded on the test device).
+- List the voices on your own Tiiny and check each model: `python tools/tts_voices.py` (`--md docs/VOICES.md`
+  regenerates the voice page; needs a Wi-Fi/LAN address, since the voice lists come from each model's own port). The
+  harness checks one preset voice: `api_test.py audio-tts-preset`.
 
 ## Classify text: Jev / System One (2026-11-06, TiinyOS 0.1.39)
 
@@ -483,7 +494,7 @@ docs, and what the Tiiny returns):
 | `vllm-sr/d3-flash` | 9B | 34% | 16K |
 | `PelaAI/KnowLine-35B-A3B-Gen1.5` | 35B | 48% | 256K |
 
-Tested: d3-lite and KnowLine-4B (check: `python tools/api_test.py classify`). d3-lite itself runs on llama.cpp.
+Tested: d3-edge, d3-lite and KnowLine-4B (check: `python tools/api_test.py classify`). d3-lite itself runs on llama.cpp.
 
 **Speed** (`python tools/speed_test.py jev`; a fresh text for every request, yes/no questions, whole-request time):
 
@@ -495,6 +506,9 @@ Tested: d3-lite and KnowLine-4B (check: `python tools/api_test.py classify`). d3
 | 64K | - | 55 s / 61 s / 113 s |
 | 128K | - | 2 min 37 s / 2 min 48 s / **fails: 504** |
 
+d3-edge (0.6B, 16K limit): 1K text 0.2 s / 1.0 s / 7.4 s, 4K text 1.6 s / 12.6 s / 99 s for 1 / 8 / 64 questions:
+about twice d3-lite's speed on short texts, slightly faster on 4K.
+
 - **d3 models read the whole text again for every question** (~2,500-4,200 tok/s): time grows with text size ×
   number of questions. Fast for short texts and a few questions.
 - **KnowLine reuses the text across questions** once it's longer than ~3,000 tokens: the first read is the cost
@@ -502,5 +516,6 @@ Tested: d3-lite and KnowLine-4B (check: `python tools/api_test.py classify`). d3
   ~3,000 tokens it deliberately reads the text twice for accuracy (its store description says so; `usage` shows
   double the tokens), and each question costs a full read.
 - `usage.input_tokens` counts the text once per question (64 questions × 4K = ~300K), even when the model reuses it.
-- **Very large requests time out:** KnowLine-4B with a 128K text and 64 questions answered
-  `504 "The decision model timed out."` Split big batches.
+- **A Jev request has 4 minutes:** KnowLine-4B with a 128K text and 64 questions answered
+  `504 "The decision model timed out."` after exactly 240 s. Split big batches (8 questions on a 128K text took
+  2 min 48 s).
