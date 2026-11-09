@@ -283,7 +283,7 @@ From Tiiny's docs (**docs**), not tested here.
 - Since 0.1.36, `/v1/models` reports `thinking` as an object (`supported`, `toggleable`, `enabled_by_default`,
   `levels`, `default_level`) instead of a boolean.
 - After a restart every call answers 502 until `tiiny login` runs or the TiinyOS app is opened (see Auth above; 0.1.38).
-- Over USB only port 80 is open (still true on 0.1.38): no model ports, so no GLM-OCR and no SongGeneration direct
+- Over USB only port 80 is open (still true on 0.1.39; wired Ethernet through a USB Ethernet adapter has no such limit): no model ports, so no GLM-OCR and no SongGeneration direct
   route (separate tracks, exact-length songs). The USB link's address can land in
   Docker's `172.17.x.x` (move Docker's `bip` if a container can't reach it).
 - Hunyuan3D `background` stage fails (BriefNet missing); SongGeneration style reference fails.
@@ -334,6 +334,13 @@ Everything behaves the same on both links except the models' own ports, which th
 
 **Re-run 2026-11-04** (Tiiny CLI updated to v0.0.5 the same day, device unchanged): USB and Wi-Fi identical again,
 same results as above.
+
+**Wired Ethernet, 2026-11-09 (TiinyOS 0.1.39):** a USB-C 2.5G Ethernet adapter plugged into the Tiiny's other
+USB-C port (not the "to PC" port), cabled to a PC that shares its internet connection, gives the Tiiny an ordinary
+LAN address. Over it the API behaves **like Wi-Fi, not like the USB cable**: every check passed (20 of 22, the two
+failures being the GLM-OCR API routes, as on every link), and **the models' own ports are reachable** (GLM-OCR
+direct: 100%), which the USB cable blocks. The checks added since 11-04 (preset voice, the three Jev models) pass on
+it too. Good option when Wi-Fi is unreliable: one cable for internet (downloads, updates) and full API access.
 
 Power off on 0.1.38 was tested by hand later the same day: the device turned off, and on power-up it came back on
 0.1.38 (no rollback). 0.1.37 (2026-10-29) gave the same results, with power off working on both links (off in ~9 s). 0.1.36
