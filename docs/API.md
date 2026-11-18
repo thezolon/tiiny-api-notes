@@ -36,6 +36,9 @@ added/removed/changed endpoint, regenerates [endpoints/gateway.md](endpoints/gat
 `/kb/docs`, `/kb/redoc` (vault). Models/inference, the assistant's connectors and `/api/services` have no
 docs or spec (`/v1/docs` 404); model containers vary (Foundation-1 has `/openapi.json`, the llama.cpp chat
 container doesn't). The pages need the API key for "Try it out" calls.
+On 0.1.39 `/docs` and `/redoc` show a **blank page** (**tested** 2026-11-18): they load their scripts from
+`/static/docs/`, which answers 404. The spec itself is fine: open `/openapi.json` directly, import it into any OpenAPI
+viewer, or read [endpoints/gateway.md](endpoints/gateway.md). `/kb/docs` and `/kb/redoc` work.
 
 **Auth:** `Authorization: Bearer <API key>` on port 80 (the key TiinyOS shows; the device accepts more
 than one). The Anthropic-style route also accepts `x-api-key` (**tested**); no key → 401. Discovery (39218) and model containers
