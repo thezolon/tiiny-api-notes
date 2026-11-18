@@ -1,12 +1,12 @@
 # Models in the Tiiny Model Store
 
-All 92 models the Model Store offered on 2026-11-06, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
+All 93 models the Model Store offered on 2026-11-18, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
 
 - **NPU** = share of the Tiiny's NPU memory the model takes when loaded. Models that add up to more than 100% can't be loaded together; TiinyOS (or the API's `unload_candidate`) tells you what has to go.
 - **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens.
 - Use any loaded chat model from other apps with the model name `default` (see [RECIPES.md](RECIPES.md)).
 
-## Licenses with limits (checked 2026-11-06)
+## Licenses with limits (checked 2026-11-18)
 
 Most models are Apache-2.0 or MIT. These are the exceptions (⚠ in the tables). This is a summary of each license as published, not legal advice: read the license itself before relying on a model.
 
@@ -18,13 +18,13 @@ Most models are Apache-2.0 or MIT. These are the exceptions (⚠ in the tables).
 **Other limits:**
 
 - `Qwen/Qwen-Image-2.1`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
+- `abenzerps/Qwen-Image-2.1-Uncensored-Quantized`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
+- `Qwen/Qwen-Image-2.1-PE-T2I`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
+- `Qwen/Qwen-Image-2.1-PE-I2I`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
 - `k2-fsa/OmniVoice`: non-commercial (the model weights; the code is Apache-2.0) (CC-BY-NC)
 - `YeiYeiArt/Z-Image-Turbo-CharacterDesignSheet`: source not found on Hugging Face (?)
 - `krea/Krea-2-Turbo`: commercial use only below USD 1M annual revenue (worldwide, no regions excluded) (Krea 2 Community)
 - `m-a-p/YuE2-3B`: non-commercial (CC-BY-NC-4.0)
-- `abenzerps/Qwen-Image-2.1-Uncensored-Quantized`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
-- `Qwen/Qwen-Image-2.1-PE-T2I`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
-- `Qwen/Qwen-Image-2.1-PE-I2I`: non-commercial (research/evaluation only without a separate license) (Qwen Research)
 - `tencent/SongGeneration-v2-large`: not checked: the license page needs a Hugging Face login; Tencent's other licenses exclude regions, so check before use (Tencent (custom))
 - `RoyalCities/Foundation-1`: commercial use only below USD 1M annual revenue (Stability AI Community)
 
@@ -34,7 +34,7 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `Qwen/Qwen-Image-2.1-PE-I2I` | 7B | 24% | 5.9 GB | 256K | Vision, Prompt Enhance | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1-PE-I2I) ⚠ |
+| `Qwen/Qwen-Image-2.1-PE-I2I` | 7B | 19% | 6.2 GB | 128K | Vision, Prompt Enhance | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1-PE-I2I) ⚠ |
 | `Qwen/Qwen3.5-9B-Turbo` | 9B | 28% | 6.5 GB | 128K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/Qwen/Qwen3.5-9B) |
 | `Qwen/Qwen3.5-9B` | 9B | 29% | 6.2 GB | 128K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/Qwen/Qwen3.5-9B) |
 | `google/gemma-4-26B-A4B-it` | 26B | 37% | 13.8 GB | 128K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/google/gemma-4-26B-A4B-it) |
@@ -50,13 +50,13 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 | `endless-frontier/BigBang-v1-Turbo` | 36B | 54% | 17.9 GB | 128K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/endless-frontier/BigBang-v1) |
 | `ornith-ai/Ornith-1.5-35B-A3B-Turbo` | 35B | 54% | 17.6 GB | 256K | Vision, Reasoning, Tool Use | [MIT](https://huggingface.co/ornith-ai/Ornith-1.5-35B-A3B) |
 | `Qwen/Qwen3.6-27B-Turbo` | 27B | 55% | 15.7 GB | 128K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/Qwen/Qwen3.6-27B) |
-| `trohrbaugh/Qwen3.8-27B-heretic-ara-Turbo` | 27B | 56% | 15.9 GB | 128K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/trohrbaugh/Qwen3.8-27B-heretic-ara) |
+| `trohrbaugh/Qwen3.8-27B-heretic-ara-Turbo` | 27B | 59% | 18.7 GB | 256K | Vision, Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/trohrbaugh/Qwen3.8-27B-heretic-ara) |
 
 ## Chat (text only) (11)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `Qwen/Qwen-Image-2.1-PE-T2I` | 7B | 23% | 5.9 GB | 256K | Prompt Enhance | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1-PE-T2I) ⚠ |
+| `Qwen/Qwen-Image-2.1-PE-T2I` | 7B | 19% | 6.2 GB | 128K | Prompt Enhance | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1-PE-T2I) ⚠ |
 | `Qwen/Qwen3-4B-Instruct-2507` | 4B | 25% | 2.3 GB | 128K | Tool Use | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-4B-Instruct-2507) |
 | `openai/gpt-oss-20b` | 20B | 27% | 10.3 GB | 128K | Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/openai/gpt-oss-20b) |
 | `Qwen/Qwen3-8B` | 8B | 28% | 4.3 GB | 128K | Reasoning, Tool Use | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-8B) |
@@ -72,7 +72,6 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `abenzerps/Qwen-Image-2.1-Uncensored-Quantized` | 7B | 0% | 15.6 GB |  | Image Editing | [Qwen Research](https://huggingface.co/abenzerps/Qwen-Image-2.1-Uncensored-Quantized) ⚠ |
 | `black-forest-labs/FLUX.2-klein-4B` | 4B | 19% | 7.2 GB |  |  | [Apache-2.0](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B) |
 | `fal/FLUX.2-klein-4B-Background-Remove` | 4B | 19% | 7.2 GB |  | Image Editing | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-background-remove-lora) |
 | `fal/FLUX.2-klein-4B-Object-Remove` | 4B | 19% | 7.2 GB |  | Image Editing | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-object-remove-lora) |
@@ -87,6 +86,7 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 | `krea/Krea-2-Turbo` | 13B | 36% | 16.5 GB |  |  | [Krea 2 Community](https://huggingface.co/krea/Krea-2-Turbo) ⚠ |
 | `SenseTime/SenseNova-U1.5-8B-MoT` | 8B | 48% | 26.2 GB |  |  | [Apache-2.0](https://huggingface.co/sensenova/SenseNova-U1.5-8B-MoT) |
 | `Qwen/Qwen-Image-2.1` | 7B | 62% | 15.6 GB |  | Image Editing | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1) ⚠ |
+| `abenzerps/Qwen-Image-2.1-Uncensored-Quantized` | 7B | 62% | 15.6 GB |  | Image Editing | [Qwen Research](https://huggingface.co/abenzerps/Qwen-Image-2.1-Uncensored-Quantized) ⚠ |
 
 ## Reading text in images (OCR) (4)
 
@@ -101,12 +101,12 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `nvidia/Parakeet-TDT-0.6B-V3` | 0.6B | 5% | 1.3 GB |  |  | [CC-BY-4.0](https://huggingface.co/nvidia/Parakeet-TDT-0.6B-V3) |
-| `openai/Whisper-large-v3-turbo` | 0.8B | 5% | 2.5 GB |  |  | [MIT](https://huggingface.co/openai/Whisper-large-v3-turbo) |
-| `FunAudioLLM/Fun-ASR-MLT-Nano` | 1B | 6% | 2.7 GB |  |  | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-MLT-Nano-2512) |
-| `OpenMOSS-Team/MOSS-Transcribe-Diarize` | 0.9B | 6% | 2.8 GB |  |  | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-Transcribe-Diarize) |
-| `FunAudioLLM/Fun-ASR-Nano` | 1B | 7% | 2.6 GB |  |  | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-Nano-2512) |
-| `Qwen/Qwen3-ASR-1.7B` | 1.7B | 7% | 4.1 GB |  |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) |
+| `nvidia/Parakeet-TDT-0.6B-V3` | 0.6B | 5% | 1.8 GB |  |  | [CC-BY-4.0](https://huggingface.co/nvidia/Parakeet-TDT-0.6B-V3) |
+| `openai/Whisper-large-v3-turbo` | 0.8B | 5% | 3.0 GB |  |  | [MIT](https://huggingface.co/openai/Whisper-large-v3-turbo) |
+| `FunAudioLLM/Fun-ASR-MLT-Nano` | 1B | 6% | 3.2 GB |  |  | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-MLT-Nano-2512) |
+| `FunAudioLLM/Fun-ASR-Nano` | 1B | 6% | 3.1 GB |  |  | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-Nano-2512) |
+| `OpenMOSS-Team/MOSS-Transcribe-Diarize` | 0.9B | 6% | 3.1 GB |  |  | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-Transcribe-Diarize) |
+| `Qwen/Qwen3-ASR-1.7B` | 1.7B | 8% | 4.6 GB |  |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) |
 
 ## Text to speech (10)
 
@@ -170,7 +170,7 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 | `Qwen/Qwen3-Reranker-8b` | 8B | 16% | 7.8 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-8b) |
 | `Qwen/Qwen3-Vl-Reranker-8b` | 8B | 21% | 8.4 GB | 16K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Reranker-8b) |
 
-## Classifiers (Jev / System One, `POST /v1/systemone`) (7)
+## Classifiers (Jev / System One, `POST /v1/systemone`) (8)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
@@ -181,3 +181,4 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 | `vllm-sr/d3-mini` | 4B | 26% | 5.3 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-mini) |
 | `vllm-sr/d3-flash` | 9B | 34% | 9.9 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-flash) |
 | `PelaAI/KnowLine-35B-A3B-Gen1.5` | 35B | 48% | 17.7 GB | 256K |  | [Apache-2.0](https://huggingface.co/PelaAI/KnowLine-35B-A3B-Gen1.5) |
+| `vllm-sr/d3` | 26B | 81% | 29.3 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3) |

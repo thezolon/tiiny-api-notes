@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "docs" / "MODELS.md"
 # Licenses, read by hand from each model's Hugging Face repo (or its base model's): see the file for sources
 LICENSES = json.loads((ROOT / "tools" / "model_licenses.json").read_text("utf-8"))
-LICENSES_CHECKED = "2026-11-06"
+LICENSES_CHECKED = "2026-11-18"
 HEADER = "| model | params | NPU | size | context | can do | license |"
 # Store types, grouped the way people ask about them
 GROUPS = [

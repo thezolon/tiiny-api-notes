@@ -500,6 +500,7 @@ docs, and what the Tiiny returns):
 | `vllm-sr/d3-mini` | 4B | 26% | 16K |
 | `vllm-sr/d3-flash` | 9B | 34% | 16K |
 | `PelaAI/KnowLine-35B-A3B-Gen1.5` | 35B | 48% | 256K |
+| `vllm-sr/d3` (added 2026-11-18) | 26B | 81% | 16K; multimodal: several images per request, every question sees them all |
 
 Tested: d3-edge, d3-lite and KnowLine-4B (check: `python tools/api_test.py classify`). d3-lite itself runs on llama.cpp.
 
