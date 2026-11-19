@@ -63,7 +63,7 @@ def gb(n):
 
 
 def ctx(n):
-    return f"{n // 1024}K" if n and n >= 1024 else (str(n) if n else "")
+    return f"{n // 1024}K" if n and n >= 1024 else (str(n) if n else "–")  # the store gives none for media models
 
 
 def what_it_does(m):
@@ -73,6 +73,11 @@ def what_it_does(m):
     t = m.get("thinking") or {}
     if isinstance(t, dict) and t.get("supported") and "Reasoning" not in bits:
         bits.append("Thinking" + (" (toggle)" if t.get("toggleable") else ""))
+    if not bits and m.get("input") and m.get("output"):  # the store lists no features: say what goes in and out
+        bits.append(" + ".join(x.strip() for x in m["input"].split(",")) + " → " + m["output"])
+    size = (m.get("image_size") or "").split(";")[0].replace("(recommended)", " (recommended)").replace("  ", " ")
+    if size and m.get("type") in ("Text-to-Image", "Image-to-Image"):
+        bits.append(size.strip())
     return ", ".join(dict.fromkeys(bits))
 
 
@@ -80,6 +85,8 @@ def license_cell(mid):
     lic = LICENSES.get(mid)
     if not lic:
         return "not checked"
+    if lic.get("license") == "?":
+        return "unknown ⚠"
     text = f"[{lic['license']}](https://huggingface.co/{lic['source']})" if lic.get("source") else lic["license"]
     return text + (" ⚠" if lic.get("limit") else "")
 
@@ -122,7 +129,10 @@ def main():
         "(`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.", "",
         "- **NPU** = share of the Tiiny's NPU memory the model takes when loaded. Models that add up to more than 100% "
         "can't be loaded together; TiinyOS (or the API's `unload_candidate`) tells you what has to go.",
-        "- **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens.",
+        "- **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens (– = not given; the "
+        "store only lists it for text models). **Can do** = the features the store lists, or else what goes in and "
+        "comes out, plus the image sizes for image models.",
+        "- **License:** ⚠ = has a limit (non-commercial, revenue cap or regions; see below), unknown = no source found.",
         "- Use any loaded chat model from other apps with the model name `default` (see [RECIPES.md](RECIPES.md)).", "",
     ] + limits(store)
     seen = set()

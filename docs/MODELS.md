@@ -3,7 +3,8 @@
 All 98 models the Model Store offered on 2026-11-19, read from the device's own catalogue (`GET /api/v1/models/online_models`). Regenerate with `python tools/model_list.py`.
 
 - **NPU** = share of the Tiiny's NPU memory the model takes when loaded. Models that add up to more than 100% can't be loaded together; TiinyOS (or the API's `unload_candidate`) tells you what has to go.
-- **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens.
+- **Size** = download size. **Context** = the longest prompt + reply it takes, in tokens (– = not given; the store only lists it for text models). **Can do** = the features the store lists, or else what goes in and comes out, plus the image sizes for image models.
+- **License:** ⚠ = has a limit (non-commercial, revenue cap or regions; see below), unknown = no source found.
 - Use any loaded chat model from other apps with the model name `default` (see [RECIPES.md](RECIPES.md)).
 
 ## Licenses with limits (checked 2026-11-19)
@@ -73,118 +74,118 @@ Models built on another model (Tiiny's "Turbo" builds, LoRAs) link to the base m
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `HiDream-ai/HiDream-O1-Image-Dev` | 9B | 16% | 8.4 GB |  |  | [MIT](https://huggingface.co/HiDream-ai/HiDream-O1-Image-Dev) |
-| `black-forest-labs/FLUX.2-klein-4B` | 4B | 19% | 7.2 GB |  |  | [Apache-2.0](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B) |
-| `fal/FLUX.2-klein-4B-Background-Remove` | 4B | 19% | 7.2 GB |  | Image Editing | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-background-remove-lora) |
-| `fal/FLUX.2-klein-4B-Object-Remove` | 4B | 19% | 7.2 GB |  | Image Editing | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-object-remove-lora) |
-| `fal/FLUX.2-klein-4B-Outpaint` | 4B | 20% | 7.2 GB |  | Image Editing | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-outpaint-lora) |
-| `fal/FLUX.2-klein-4B-Zoom` | 4B | 20% | 7.2 GB |  | Image Editing | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-zoom-lora) |
-| `TaoBaiBai2025/Z-Image-Turbo-Creating-Realistic` | 10B | 23% | 10.2 GB |  |  | [Apache-2.0?](https://huggingface.co/long12256/Z-image-turbo_Creating-Realistic) |
-| `Tongyi-MAI/Z-Image-Turbo` | 10B | 23% | 10.2 GB |  |  | [Apache-2.0](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) |
-| `Tongyi-MAI/Z-Image-Turbo-Children-Drawing` | 10B | 23% | 10.2 GB |  |  | [Apache-2.0?](https://huggingface.co/ostris/z_image_turbo_childrens_drawings) |
-| `YeiYeiArt/Z-Image-Turbo-CharacterDesignSheet` | 10B | 23% | 10.2 GB |  |  | ? ⚠ |
-| `baidu/ERNIE-Image-Turbo` | 8B | 26% | 11.4 GB |  |  | [Apache-2.0](https://huggingface.co/baidu/ERNIE-Image-Turbo) |
-| `krea/Krea-2-Turbo` | 13B | 36% | 16.5 GB |  |  | [Krea 2 Community](https://huggingface.co/krea/Krea-2-Turbo) ⚠ |
-| `SenseTime/SenseNova-U1.5-8B-MoT` | 8B | 48% | 26.2 GB |  |  | [Apache-2.0](https://huggingface.co/sensenova/SenseNova-U1.5-8B-MoT) |
-| `Viggle/Qwen-Image-2.1-viggle-turbo` | 7B | 52% | 15.6 GB |  | Image Editing | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1) ⚠ |
-| `Qwen/Qwen-Image-2.1` | 7B | 62% | 15.6 GB |  | Image Editing | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1) ⚠ |
-| `abenzerps/Qwen-Image-2.1-Uncensored-Quantized` | 7B | 62% | 15.6 GB |  | Image Editing | [Qwen Research](https://huggingface.co/abenzerps/Qwen-Image-2.1-Uncensored-Quantized) ⚠ |
+| `HiDream-ai/HiDream-O1-Image-Dev` | 9B | 16% | 8.4 GB | – | Text + Image → Image, 2048x2048 (recommended) | [MIT](https://huggingface.co/HiDream-ai/HiDream-O1-Image-Dev) |
+| `black-forest-labs/FLUX.2-klein-4B` | 4B | 19% | 7.2 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/black-forest-labs/FLUX.2-klein-4B) |
+| `fal/FLUX.2-klein-4B-Background-Remove` | 4B | 19% | 7.2 GB | – | Image Editing, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-background-remove-lora) |
+| `fal/FLUX.2-klein-4B-Object-Remove` | 4B | 19% | 7.2 GB | – | Image Editing, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-object-remove-lora) |
+| `fal/FLUX.2-klein-4B-Outpaint` | 4B | 20% | 7.2 GB | – | Image Editing, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-outpaint-lora) |
+| `fal/FLUX.2-klein-4B-Zoom` | 4B | 20% | 7.2 GB | – | Image Editing, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/fal/flux-2-klein-4B-zoom-lora) |
+| `TaoBaiBai2025/Z-Image-Turbo-Creating-Realistic` | 10B | 23% | 10.2 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | [Apache-2.0?](https://huggingface.co/long12256/Z-image-turbo_Creating-Realistic) |
+| `Tongyi-MAI/Z-Image-Turbo` | 10B | 23% | 10.2 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/Tongyi-MAI/Z-Image-Turbo) |
+| `Tongyi-MAI/Z-Image-Turbo-Children-Drawing` | 10B | 23% | 10.2 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | [Apache-2.0?](https://huggingface.co/ostris/z_image_turbo_childrens_drawings) |
+| `YeiYeiArt/Z-Image-Turbo-CharacterDesignSheet` | 10B | 23% | 10.2 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | unknown ⚠ |
+| `baidu/ERNIE-Image-Turbo` | 8B | 26% | 11.4 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | [Apache-2.0](https://huggingface.co/baidu/ERNIE-Image-Turbo) |
+| `krea/Krea-2-Turbo` | 13B | 36% | 16.5 GB | – | Text → Image, 512x512 (fastest), up to 1536x1536 | [Krea 2 Community](https://huggingface.co/krea/Krea-2-Turbo) ⚠ |
+| `SenseTime/SenseNova-U1.5-8B-MoT` | 8B | 48% | 26.2 GB | – | Text + Image → Image, 2048x2048 (recommended) | [Apache-2.0](https://huggingface.co/sensenova/SenseNova-U1.5-8B-MoT) |
+| `Viggle/Qwen-Image-2.1-viggle-turbo` | 7B | 52% | 15.6 GB | – | Image Editing, 2048x2048 (recommended) | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1) ⚠ |
+| `Qwen/Qwen-Image-2.1` | 7B | 62% | 15.6 GB | – | Image Editing, 512x512 (fastest), up to 2048x2048 | [Qwen Research](https://huggingface.co/Qwen/Qwen-Image-2.1) ⚠ |
+| `abenzerps/Qwen-Image-2.1-Uncensored-Quantized` | 7B | 62% | 15.6 GB | – | Image Editing, 512x512 (fastest), up to 2048x2048 | [Qwen Research](https://huggingface.co/abenzerps/Qwen-Image-2.1-Uncensored-Quantized) ⚠ |
 
 ## Reading text in images (OCR) (6)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `PaddlePaddle/PP-OCRv6-Small` | 2.48M | 0% | 0.3 GB |  |  | [Apache-2.0](https://huggingface.co/PaddlePaddle/PP-OCRv6_small_rec) |
-| `PaddlePaddle/PP-OCRv6-Medium` | 22M | 1% | 0.3 GB |  |  | [Apache-2.0](https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_rec) |
-| `openbmb/MiniCPM-OCR-1.0` | 1.3B | 4% | 1.8 GB | 64K |  | [Apache-2.0](https://huggingface.co/openbmb/MiniCPM-OCR-1.0) |
-| `zai-org/GLM-OCR` | 0.9B | 4% | 1.9 GB | 64K |  | [MIT](https://huggingface.co/zai-org/GLM-OCR) |
-| `baidu/Unlimited-Ocr` | 3B | 7% | 4.0 GB | 32K |  | [MIT](https://huggingface.co/baidu/Unlimited-OCR) |
-| `PaddlePaddle/PP-DocLayoutV3` | 1B | 20% | 0.2 GB |  |  | [Apache-2.0](https://huggingface.co/PaddlePaddle/PP-DocLayoutV3) |
+| `PaddlePaddle/PP-OCRv6-Small` | 2.48M | 0% | 0.3 GB | – | Image → Text | [Apache-2.0](https://huggingface.co/PaddlePaddle/PP-OCRv6_small_rec) |
+| `PaddlePaddle/PP-OCRv6-Medium` | 22M | 1% | 0.3 GB | – | Image → Text | [Apache-2.0](https://huggingface.co/PaddlePaddle/PP-OCRv6_medium_rec) |
+| `openbmb/MiniCPM-OCR-1.0` | 1.3B | 4% | 1.8 GB | 64K | Image → Text | [Apache-2.0](https://huggingface.co/openbmb/MiniCPM-OCR-1.0) |
+| `zai-org/GLM-OCR` | 0.9B | 4% | 1.9 GB | 64K | Image → Text | [MIT](https://huggingface.co/zai-org/GLM-OCR) |
+| `baidu/Unlimited-Ocr` | 3B | 7% | 4.0 GB | 32K | Image → Text | [MIT](https://huggingface.co/baidu/Unlimited-OCR) |
+| `PaddlePaddle/PP-DocLayoutV3` | 1B | 20% | 0.2 GB | – | Image → Text | [Apache-2.0](https://huggingface.co/PaddlePaddle/PP-DocLayoutV3) |
 
 ## Speech to text (6)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `nvidia/Parakeet-TDT-0.6B-V3` | 0.6B | 5% | 1.8 GB |  |  | [CC-BY-4.0](https://huggingface.co/nvidia/Parakeet-TDT-0.6B-V3) |
-| `openai/Whisper-large-v3-turbo` | 0.8B | 5% | 3.0 GB |  |  | [MIT](https://huggingface.co/openai/Whisper-large-v3-turbo) |
-| `FunAudioLLM/Fun-ASR-MLT-Nano` | 1B | 6% | 3.2 GB |  |  | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-MLT-Nano-2512) |
-| `FunAudioLLM/Fun-ASR-Nano` | 1B | 6% | 3.1 GB |  |  | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-Nano-2512) |
-| `OpenMOSS-Team/MOSS-Transcribe-Diarize` | 0.9B | 6% | 3.1 GB |  |  | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-Transcribe-Diarize) |
-| `Qwen/Qwen3-ASR-1.7B` | 1.7B | 8% | 4.6 GB |  |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) |
+| `nvidia/Parakeet-TDT-0.6B-V3` | 0.6B | 5% | 1.8 GB | – | Audio → Text | [CC-BY-4.0](https://huggingface.co/nvidia/Parakeet-TDT-0.6B-V3) |
+| `openai/Whisper-large-v3-turbo` | 0.8B | 5% | 3.0 GB | – | Audio → Text | [MIT](https://huggingface.co/openai/Whisper-large-v3-turbo) |
+| `FunAudioLLM/Fun-ASR-MLT-Nano` | 1B | 6% | 3.2 GB | – | Audio → Text | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-MLT-Nano-2512) |
+| `FunAudioLLM/Fun-ASR-Nano` | 1B | 6% | 3.1 GB | – | Audio → Text | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-ASR-Nano-2512) |
+| `OpenMOSS-Team/MOSS-Transcribe-Diarize` | 0.9B | 6% | 3.1 GB | – | Audio → Text | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-Transcribe-Diarize) |
+| `Qwen/Qwen3-ASR-1.7B` | 1.7B | 8% | 4.6 GB | – | Audio → Text | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) |
 
 ## Text to speech (12)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `OpenMOSS-Team/MOSS-TTS-Nano-100M` | 0.1B | 0% | 0.3 GB |  | Voice Clone | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Nano-100M) |
-| `Supertone/supertonic-3` | 0.1B | 0% | 0.2 GB |  | Custom Voice | [OpenRAIL](https://huggingface.co/Supertone/supertonic-3) |
-| `hexgrad/Kokoro-82M` | 82M | 0% | 0.3 GB |  | Custom Voice | [Apache-2.0](https://huggingface.co/hexgrad/Kokoro-82M) |
-| `k2-fsa/OmniVoice` | 0.6B | 2% | 1.8 GB |  | Voice Clone, Voice Design | [CC-BY-NC](https://huggingface.co/k2-fsa/OmniVoice) ⚠ |
-| `microsoft/VibeVoice-Realtime-0.5B` | 0.5B | 2% | 1.1 GB |  | Custom Voice | [MIT](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) |
-| `openbmb/VoxCPM2` | 2B | 7% | 4.0 GB |  | Voice Clone, Voice Design | [Apache-2.0](https://huggingface.co/openbmb/VoxCPM2) |
-| `Qwen/Qwen3-TTS-12Hz-1.7B-Base` | 1.7B | 8% | 3.6 GB |  | Voice Clone | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base) |
-| `Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice` | 1.7B | 8% | 3.5 GB |  | Custom Voice | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) |
-| `Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign` | 1.7B | 8% | 3.5 GB |  | Voice Design | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) |
-| `microsoft/VibeVoice-1.5B` | 1.5B | 8% | 3.9 GB |  | Voice Clone, Multi-Speaker Dialogue | [MIT](https://huggingface.co/microsoft/VibeVoice-1.5B) |
-| `FunAudioLLM/Fun-CosyVoice3-0.5B-2512` | 0.5B | 9% | 1.9 GB |  | Voice Clone, Voice Conversion | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) |
-| `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` | 4.6B | 57% | 8.4 GB |  | Voice Clone | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5) |
+| `OpenMOSS-Team/MOSS-TTS-Nano-100M` | 0.1B | 0% | 0.3 GB | – | Voice Clone | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Nano-100M) |
+| `Supertone/supertonic-3` | 0.1B | 0% | 0.2 GB | – | Custom Voice | [OpenRAIL](https://huggingface.co/Supertone/supertonic-3) |
+| `hexgrad/Kokoro-82M` | 82M | 0% | 0.3 GB | – | Custom Voice | [Apache-2.0](https://huggingface.co/hexgrad/Kokoro-82M) |
+| `k2-fsa/OmniVoice` | 0.6B | 2% | 1.8 GB | – | Voice Clone, Voice Design | [CC-BY-NC](https://huggingface.co/k2-fsa/OmniVoice) ⚠ |
+| `microsoft/VibeVoice-Realtime-0.5B` | 0.5B | 2% | 1.1 GB | – | Custom Voice | [MIT](https://huggingface.co/microsoft/VibeVoice-Realtime-0.5B) |
+| `openbmb/VoxCPM2` | 2B | 7% | 4.0 GB | – | Voice Clone, Voice Design | [Apache-2.0](https://huggingface.co/openbmb/VoxCPM2) |
+| `Qwen/Qwen3-TTS-12Hz-1.7B-Base` | 1.7B | 8% | 3.6 GB | – | Voice Clone | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-Base) |
+| `Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice` | 1.7B | 8% | 3.5 GB | – | Custom Voice | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) |
+| `Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign` | 1.7B | 8% | 3.5 GB | – | Voice Design | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign) |
+| `microsoft/VibeVoice-1.5B` | 1.5B | 8% | 3.9 GB | – | Voice Clone, Multi-Speaker Dialogue | [MIT](https://huggingface.co/microsoft/VibeVoice-1.5B) |
+| `FunAudioLLM/Fun-CosyVoice3-0.5B-2512` | 0.5B | 9% | 1.9 GB | – | Voice Clone, Voice Conversion | [Apache-2.0](https://huggingface.co/FunAudioLLM/Fun-CosyVoice3-0.5B-2512) |
+| `OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5` | 4.6B | 57% | 8.4 GB | – | Voice Clone | [Apache-2.0](https://huggingface.co/OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5) |
 
 ## Music (5)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `RoyalCities/Foundation-1` | 2B | 5% | 1.4 GB |  |  | [Stability AI Community](https://huggingface.co/RoyalCities/Foundation-1) ⚠ |
-| `m-a-p/YuE2-3B` | 3B | 14% | 5.5 GB |  |  | [CC-BY-NC-4.0](https://huggingface.co/m-a-p/YuE2-3B) ⚠ |
-| `tencent/SongGeneration-v2-large` | 4B | 20% | 6.9 GB |  |  | [Tencent (custom)](https://huggingface.co/tencent/SongGeneration) ⚠ |
-| `ACE-Step/AceStep-XL-Turbo` | 5B | 35% | 11.8 GB |  |  | [MIT](https://huggingface.co/ACE-Step/acestep-v15-xl-turbo) |
-| `ACE-Step/AceStep-XL-Base` | 5B | 37% | 11.6 GB |  |  | [MIT](https://huggingface.co/ACE-Step/acestep-v15-xl-base) |
+| `RoyalCities/Foundation-1` | 2B | 5% | 1.4 GB | – | Text + Audio → Audio | [Stability AI Community](https://huggingface.co/RoyalCities/Foundation-1) ⚠ |
+| `m-a-p/YuE2-3B` | 3B | 14% | 5.5 GB | – | Text + Audio → Audio | [CC-BY-NC-4.0](https://huggingface.co/m-a-p/YuE2-3B) ⚠ |
+| `tencent/SongGeneration-v2-large` | 4B | 20% | 6.9 GB | – | Text + Audio → Audio | [Tencent (custom)](https://huggingface.co/tencent/SongGeneration) ⚠ |
+| `ACE-Step/AceStep-XL-Turbo` | 5B | 35% | 11.8 GB | – | Text + Audio → Audio | [MIT](https://huggingface.co/ACE-Step/acestep-v15-xl-turbo) |
+| `ACE-Step/AceStep-XL-Base` | 5B | 37% | 11.6 GB | – | Text + Audio → Audio | [MIT](https://huggingface.co/ACE-Step/acestep-v15-xl-base) |
 
 ## 3D (2)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `microsoft/TRELLIS.2-4B` | 4B | 6% | 9.8 GB |  |  | [MIT](https://huggingface.co/microsoft/TRELLIS.2-4B) |
-| `Tencent/Hunyuan3d-2.1` | 5.3B | 22% | 10.6 GB |  |  | [Tencent Hunyuan 3D Community](https://huggingface.co/Tencent/Hunyuan3d-2.1) ⚠ |
+| `microsoft/TRELLIS.2-4B` | 4B | 6% | 9.8 GB | – | Image → 3D | [MIT](https://huggingface.co/microsoft/TRELLIS.2-4B) |
+| `Tencent/Hunyuan3d-2.1` | 5.3B | 22% | 10.6 GB | – | Image → 3D | [Tencent Hunyuan 3D Community](https://huggingface.co/Tencent/Hunyuan3d-2.1) ⚠ |
 
 ## Video (1)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `lightx2v/MiniMax-H3-Turbo` | 33B | 49% | 48.9 GB |  |  | [MiniMax H3 Community](https://huggingface.co/MiniMaxAI/MiniMax-H3) ⚠ |
+| `lightx2v/MiniMax-H3-Turbo` | 33B | 49% | 48.9 GB | – | Text + Image → Video | [MiniMax H3 Community](https://huggingface.co/MiniMaxAI/MiniMax-H3) ⚠ |
 
 ## Embeddings (for search and the vault) (8)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `Qwen/Qwen3-Embedding-0.6B` | 0.6B | 2% | 0.9 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) |
-| `tencent/R3-embedding-0.6b` | 0.6B | 4% | 0.8 GB | 8K |  | [Apache-2.0](https://huggingface.co/tencent/R3-embedding-0.6b) |
-| `nvidia/Nemotron-3-Embed-1B-BF16` | 1B | 7% | 1.3 GB | 4K |  | [OpenMDW-1.1](https://huggingface.co/nvidia/Nemotron-3-Embed-1B-BF16) |
-| `Qwen/Qwen3-Vl-Embedding-2b` | 2B | 8% | 2.4 GB | 16K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Embedding-2b) |
-| `Qwen/Qwen3-Embedding-8b` | 8B | 18% | 7.8 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Embedding-8b) |
-| `nvidia/Nemotron-3-Embed-8b-Bf16` | 8B | 20% | 8.1 GB | 4K |  | [OpenMDW-1.1](https://huggingface.co/nvidia/Nemotron-3-Embed-8b-Bf16) |
-| `Qwen/Qwen3-Vl-Embedding-8b` | 8B | 21% | 8.9 GB | 16K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Embedding-8b) |
-| `Qwen/Qwen3-Embedding-4b` | 4B | 23% | 4.2 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Embedding-4b) |
+| `Qwen/Qwen3-Embedding-0.6B` | 0.6B | 2% | 0.9 GB | 8K | Text → Vector | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Embedding-0.6B) |
+| `tencent/R3-embedding-0.6b` | 0.6B | 4% | 0.8 GB | 8K | Text → Vector | [Apache-2.0](https://huggingface.co/tencent/R3-embedding-0.6b) |
+| `nvidia/Nemotron-3-Embed-1B-BF16` | 1B | 7% | 1.3 GB | 4K | Text → Vector | [OpenMDW-1.1](https://huggingface.co/nvidia/Nemotron-3-Embed-1B-BF16) |
+| `Qwen/Qwen3-Vl-Embedding-2b` | 2B | 8% | 2.4 GB | 16K | Text + Image + Video → Vector | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Embedding-2b) |
+| `Qwen/Qwen3-Embedding-8b` | 8B | 18% | 7.8 GB | 8K | Text → Vector | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Embedding-8b) |
+| `nvidia/Nemotron-3-Embed-8b-Bf16` | 8B | 20% | 8.1 GB | 4K | Text → Vector | [OpenMDW-1.1](https://huggingface.co/nvidia/Nemotron-3-Embed-8b-Bf16) |
+| `Qwen/Qwen3-Vl-Embedding-8b` | 8B | 21% | 8.9 GB | 16K | Text + Image → Vector | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Embedding-8b) |
+| `Qwen/Qwen3-Embedding-4b` | 4B | 23% | 4.2 GB | 8K | Text → Vector | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Embedding-4b) |
 
 ## Rerankers (6)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `Qwen/Qwen3-Reranker-0.6B` | 0.6B | 2% | 0.7 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-0.6B) |
-| `tencent/R3-rerank-0.6b` | 0.6B | 3% | 0.8 GB | 8K |  | [Apache-2.0](https://huggingface.co/tencent/R3-rerank-0.6b) |
-| `Qwen/Qwen3-Vl-Reranker-2b` | 2B | 8% | 2.3 GB | 16K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Reranker-2b) |
-| `Qwen/Qwen3-Reranker-4b` | 4B | 10% | 4.2 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-4b) |
-| `Qwen/Qwen3-Reranker-8b` | 8B | 16% | 7.8 GB | 8K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-8b) |
-| `Qwen/Qwen3-Vl-Reranker-8b` | 8B | 21% | 8.4 GB | 16K |  | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Reranker-8b) |
+| `Qwen/Qwen3-Reranker-0.6B` | 0.6B | 2% | 0.7 GB | 8K | Text → Score | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-0.6B) |
+| `tencent/R3-rerank-0.6b` | 0.6B | 3% | 0.8 GB | 8K | Text → Score | [Apache-2.0](https://huggingface.co/tencent/R3-rerank-0.6b) |
+| `Qwen/Qwen3-Vl-Reranker-2b` | 2B | 8% | 2.3 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Reranker-2b) |
+| `Qwen/Qwen3-Reranker-4b` | 4B | 10% | 4.2 GB | 8K | Text → Score | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-4b) |
+| `Qwen/Qwen3-Reranker-8b` | 8B | 16% | 7.8 GB | 8K | Text → Score | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Reranker-8b) |
+| `Qwen/Qwen3-Vl-Reranker-8b` | 8B | 21% | 8.4 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/Qwen/Qwen3-Vl-Reranker-8b) |
 
 ## Classifiers (Jev / System One, `POST /v1/systemone`) (8)
 
 | model | params | NPU | size | context | can do | license |
 |---|---|---|---|---|---|---|
-| `vllm-sr/d3-lite` | 0.8B | 7% | 1.2 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-lite) |
-| `PelaAI/KnowLine-4B-Gen5.5` | 4B | 17% | 3.7 GB | 256K |  | [Apache-2.0](https://huggingface.co/PelaAI/KnowLine-4B-Gen5.5) |
-| `vllm-sr/d3-edge` | 0.6B | 21% | 0.8 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-edge) |
-| `vllm-sr/d3-nano` | 2B | 25% | 2.5 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-nano) |
-| `vllm-sr/d3-mini` | 4B | 26% | 5.3 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-mini) |
-| `vllm-sr/d3-flash` | 9B | 34% | 9.9 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3-flash) |
-| `PelaAI/KnowLine-35B-A3B-Gen1.5` | 35B | 48% | 17.7 GB | 256K |  | [Apache-2.0](https://huggingface.co/PelaAI/KnowLine-35B-A3B-Gen1.5) |
-| `vllm-sr/d3` | 26B | 81% | 29.3 GB | 16K |  | [Apache-2.0](https://huggingface.co/vllm-sr/d3) |
+| `vllm-sr/d3-lite` | 0.8B | 7% | 1.2 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/vllm-sr/d3-lite) |
+| `PelaAI/KnowLine-4B-Gen5.5` | 4B | 17% | 3.7 GB | 256K | Text + Image → Score | [Apache-2.0](https://huggingface.co/PelaAI/KnowLine-4B-Gen5.5) |
+| `vllm-sr/d3-edge` | 0.6B | 21% | 0.8 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/vllm-sr/d3-edge) |
+| `vllm-sr/d3-nano` | 2B | 25% | 2.5 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/vllm-sr/d3-nano) |
+| `vllm-sr/d3-mini` | 4B | 26% | 5.3 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/vllm-sr/d3-mini) |
+| `vllm-sr/d3-flash` | 9B | 34% | 9.9 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/vllm-sr/d3-flash) |
+| `PelaAI/KnowLine-35B-A3B-Gen1.5` | 35B | 48% | 17.7 GB | 256K | Text + Image → Score | [Apache-2.0](https://huggingface.co/PelaAI/KnowLine-35B-A3B-Gen1.5) |
+| `vllm-sr/d3` | 26B | 81% | 29.3 GB | 16K | Text + Image → Score | [Apache-2.0](https://huggingface.co/vllm-sr/d3) |
