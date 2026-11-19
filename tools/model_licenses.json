@@ -409,5 +409,26 @@
  "vllm-sr/d3": {
   "license": "Apache-2.0",
   "source": "vllm-sr/d3"
+ },
+ "baidu/Unlimited-Ocr": {
+  "license": "MIT",
+  "source": "baidu/Unlimited-OCR"
+ },
+ "openbmb/MiniCPM-OCR-1.0": {
+  "license": "Apache-2.0",
+  "source": "openbmb/MiniCPM-OCR-1.0"
+ },
+ "Viggle/Qwen-Image-2.1-viggle-turbo": {
+  "license": "Qwen Research",
+  "source": "Qwen/Qwen-Image-2.1",
+  "limit": "non-commercial (research/evaluation only without a separate license; LoRA on Qwen-Image-2.1)"
+ },
+ "OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5": {
+  "license": "Apache-2.0",
+  "source": "OpenMOSS-Team/MOSS-TTS-Local-Transformer-v1.5"
+ },
+ "FunAudioLLM/Fun-CosyVoice3-0.5B-2512": {
+  "license": "Apache-2.0",
+  "source": "FunAudioLLM/Fun-CosyVoice3-0.5B-2512"
  }
 }
