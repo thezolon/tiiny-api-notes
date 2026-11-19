@@ -84,8 +84,9 @@ All through port 80 (the model service). `{id}` is the URL-encoded model id, e.g
 | POST | `/api/v1/models/{id}/launch/stream` | load with progress stream | **app** |
 | POST | `/api/v1/models/{id}/stop` | unload | **tested** |
 | POST | `/api/v1/models/unload_all` | unload everything | **tested** |
-| POST | `/api/v1/models/{id}/download`, `/pause_download`, `/interrupt`; `/api/v1/models/interrupt_all` | downloads | **docs**/**app** |
-| DELETE | `/api/v1/models/{id}` | delete a downloaded model | **docs** |
+| POST | `/api/v1/models/{id}/download` (empty body) | start a download: `{"message": "start download …", "progress": 0.0}`; then watch `GET /api/v1/models/?including_downloading=true` (`status` downloading → `downloaded`, or `error` when the Tiiny has no internet). The id keeps its `/` | **tested** 2026-11-19 |
+| POST | `/api/v1/models/{id}/pause_download`, `/interrupt`; `/api/v1/models/interrupt_all` | pause/stop downloads | **docs**/**app** |
+| DELETE | `/api/v1/models/{id}` | delete a downloaded model: `{"message": "Model … deleted finish."}`; the id keeps its `/` | **tested** 2026-11-19 |
 | POST | `/api/v1/models/import`, `/import/inspect`; GET `/import/toolkits` | import a custom model (checks toolkit support) | **docs**/**app** |
 | GET | `/api/v1/models/types`, `/storage`, `/online_models`, `/api/v1/model-stats` | model types, disk use, store catalogue, stats | probed |
 | GET (ws) | `/api/v1/models/running/ws`, `/api/v1/models/npu/status/ws` | live updates | **app** |
@@ -302,6 +303,14 @@ From Tiiny's docs (**docs**), not tested here.
   can come back with empty `content`, `finish_reason: "length"` and the budget spent in `reasoning_content`: it looks
   like the model refused. Turn thinking off for the request (`"chat_template_kwargs": {"enable_thinking": false}`;
   Anthropic style: `"thinking": {"type": "disabled"}`) or raise `max_tokens` to 1-2K.
+- **Updating a model = delete + download.** There is no update call (API or CLI). `DELETE /api/v1/models/{id}`, then
+  `POST /api/v1/models/{id}/download`, works with no CLI at all (**tested** 2026-11-19, 0.1.39, Kokoro: 21 s);
+  `python tools/download_models.py --updates` lists what's waiting and updates the ones you pick, one at a time.
+  Which models have one waiting: `need_update` in `GET /api/v1/models/`. Two traps: **while the Tiiny has no
+  internet, every model reads `need_update: false`** (so "no updates" can just mean it's offline), and the store's
+  `version_label` is not the build a download installs (fresh Kokoro: build 20261106, store label 20261118), so don't
+  compare versions to find updates. A download that fails after the delete leaves the model missing until it is
+  downloaded again.
 - **Don't trust `thinking.supported: false`.** The prompt enhancer `Qwen/Qwen-Image-2.1-PE-T2I` reports
   `"thinking": {"supported": false}`, yet it thinks anyway: the whole `max_tokens` budget goes into
   `reasoning_content` and `content` comes back empty (**tested** 2026-11-19, TiinyOS 0.1.39, model build from before
