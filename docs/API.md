@@ -302,6 +302,12 @@ From Tiiny's docs (**docs**), not tested here.
   can come back with empty `content`, `finish_reason: "length"` and the budget spent in `reasoning_content`: it looks
   like the model refused. Turn thinking off for the request (`"chat_template_kwargs": {"enable_thinking": false}`;
   Anthropic style: `"thinking": {"type": "disabled"}`) or raise `max_tokens` to 1-2K.
+- **Don't trust `thinking.supported: false`.** The prompt enhancer `Qwen/Qwen-Image-2.1-PE-T2I` reports
+  `"thinking": {"supported": false}`, yet it thinks anyway: the whole `max_tokens` budget goes into
+  `reasoning_content` and `content` comes back empty (**tested** 2026-11-19, TiinyOS 0.1.39, model build from before
+  the 2026-11-18 store update). Sending `"chat_template_kwargs": {"enable_thinking": false}` fixes it (a full
+  rewritten prompt in about 10 s). Safe rule for scripts: send it to every chat model except gpt-oss, whatever
+  `thinking` says, and if `content` is empty, check `reasoning_content` before calling it a refusal.
 - **Video renders over 1 hour fail but keep running** (0.1.38, 2026-11-01, MiniMax-H3-Turbo, 1344x768, 7 s, 8 steps,
   which would need about 2 hours): after exactly 60 minutes `GET /v1/videos/{id}` reports `status: failed`,
   `error.code: GENERATION_TIMEOUT` ("video generation exceeded the gateway time limit"), yet the NPU stays at 100%:
