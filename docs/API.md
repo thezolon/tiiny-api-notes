@@ -306,7 +306,10 @@ From Tiiny's docs (**docs**), not tested here.
   `"thinking": {"supported": false}`, yet it thinks anyway: the whole `max_tokens` budget goes into
   `reasoning_content` and `content` comes back empty (**tested** 2026-11-19, TiinyOS 0.1.39, model build from before
   the 2026-11-18 store update). Sending `"chat_template_kwargs": {"enable_thinking": false}` fixes it (a full
-  rewritten prompt in about 10 s). Safe rule for scripts: send it to every chat model except gpt-oss, whatever
+  rewritten prompt in about 10 s). Its image-editing twin `Qwen/Qwen-Image-2.1-PE-I2I` does the same (**tested**
+  2026-11-19, build 20261105, `python tools/thinking_check.py`): as-is it thought for 3,388 characters (775 tokens,
+  41 s) before a 227-character answer; with thinking off it answered in 4.8 s (83 tokens), as a small JSON object
+  (`{"action": "modify", "description": ...}`) rather than plain text. Safe rule for scripts: send it to every chat model except gpt-oss, whatever
   `thinking` says, and if `content` is empty, check `reasoning_content` before calling it a refusal.
 - **Video renders over 1 hour fail but keep running** (0.1.38, 2026-11-01, MiniMax-H3-Turbo, 1344x768, 7 s, 8 steps,
   which would need about 2 hours): after exactly 60 minutes `GET /v1/videos/{id}` reports `status: failed`,

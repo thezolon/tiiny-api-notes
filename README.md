@@ -32,6 +32,7 @@ says which version it was checked against. Corrections welcome (issues/PRs).
 | [tools/download_models.py](tools/download_models.py) | download models from a script and know when they're done (works around the CLI never returning) |
 | [tools/tts_voices.py](tools/tts_voices.py) | list each text-to-speech model's voices and check which `voice` values work through the API |
 | [tools/stt_bench.py](tools/stt_bench.py) | benchmark the speech-to-text models on your own Tiiny (word error rate, speed); needs ffmpeg |
+| [tools/thinking_check.py](tools/thinking_check.py) | check whether a chat model really thinks (whatever it reports) and that turning thinking off works |
 | [tools/usb_download_test.py](tools/usb_download_test.py) | check whether the Tiiny can download a model over the USB cable with its Wi-Fi off (turns Wi-Fi back on afterwards) |
 | [tools/api_snapshot.py](tools/api_snapshot.py) | fetch the device's specs, list added/removed/changed endpoints since last time, regenerate the endpoint lists, probe the read-only routes |
 
