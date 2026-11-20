@@ -464,6 +464,24 @@ and the USB link doesn't give it a way out. Keep Wi-Fi on (any network with inte
 fine for everything else. Check it yourself with `python tools/usb_download_test.py` (turns Wi-Fi off, tries a small
 download, turns Wi-Fi back on).
 
+## The 2026-11-18 Model Store release: claims checked (2026-11-20, TiinyOS 0.1.39)
+
+What Tiiny's release notes said, and what we measured. Rerun on your own Tiiny: `python tools/release_check.py`
+(`python tools/speed_test.py chat --model Qwen/Qwen3.5-9B-Turbo` for the speed).
+
+| claim | model | result |
+|---|---|---|
+| 256K context | Qwen3.5-9B-Turbo | **true**: `context_window` 262144, and a 243K-token prompt was read in 374 s (651 tok/s), then answered at 12.6 tok/s |
+| 39 tok/s decoding | Qwen3.5-9B-Turbo | **not reached**: 30.5 tok/s writing at a 1K prompt, 27.4 at 4K, 23.7 at 32K, 14.5 at 155K (reading 1,643 tok/s at 1K) |
+| default presence penalty 1.5 | Ornith-1.5-35B-A3B-Turbo | **true** (the model's own `/props`). Qwen3.6-35B-A3B-Turbo also has 1.5; Qwen3.5-9B-Turbo 0 |
+| image inputs up to 1 MP | Qwen3.6-35B-A3B-Turbo | **true**: bigger images are shrunk, not refused (1 MP and 4 MP both cost 1,044 prompt tokens; 0.5 MP 550) |
+| configurable sampler/scheduler | HiDream-O1-Image-Dev, ERNIE-Image-Turbo | **true**: `"scheduler": {"type": "euler", "params": {...}}` in `/v1/images/generations` (an object; a plain string is refused). HiDream: `flash_flow_match_euler` (default), `euler`; ERNIE: `euler` (default), `euler_ancestral_rf`, `unipc_flow`. Unknown types answer 400 `unsupported scheduler type`. Each model lists its options and parameters at `GET /v1/models` on its own port |
+| image input via URL | Unlimited-OCR, PP-OCRv6 Small/Medium | **true**: put an `http(s)://` URL in `input` of `/v1/ocr` (also accepted: `image`, `images`); same result as a data URI |
+| task pause/resume | OCR models | **not found**: the OCR port answers only `/v1/ocr`, `/v1/models` and `/health` |
+| larger audio via URL | ACE-Step, SongGeneration | **true for ACE-Step**: `config.reference_audio_url` (also `source_audio_url`, `audio_url`) is fetched; a missing file answers 400 `media URL returned HTTP 404`. SongGeneration fetches it too, but a real reference still fails (500, as before the update). `GET /v1/music/info?model=<id>` lists every config field |
+| removed the model field check | MOSS-TTS-Nano, VoxCPM2 | only on the model's own port (any `model`, or none, works there). The gateway still needs the exact model id |
+| thinking on Ornith-1.5 | Ornith-1.5-35B-A3B-Turbo | the store says switchable and on; `/v1/models` says not switchable and off. **The store is right**: it thinks by default and `enable_thinking: false` switches it off (26.6 s → 12.2 s) |
+
 ## Text to speech: which voice to send (2026-11-05, TiinyOS 0.1.38)
 
 *Updated 2026-11-06 for TiinyOS 0.1.39. Every model's full voice list: [VOICES.md](VOICES.md).*
@@ -472,6 +490,12 @@ download, turns Wi-Fi back on).
 often because `voice` isn't one of the model's own speakers. OpenAI clients (Hermes, Open WebUI, SDK examples) send
 `voice: "alloy"` by default, which most of these models reject. Use the full model id as `model` (`tts-1` or a short
 name gives 404 "not loaded").
+
+**A single sentence fails too** (**tested** 2026-11-20, TiinyOS 0.1.39, model builds of 2026-11-18): through the gateway,
+MOSS-TTS-Nano, OmniVoice, VoxCPM2 and Qwen3-TTS CustomVoice answer the same instant 500 for one plain sentence ending
+in `.` or in nothing (`"Hello there friend how are you."`), 4 times out of 4. The same text works on the model's own port,
+so it's the gateway. **Workaround: add a trailing space** (`"... how are you. "`), or end on `!`; two sentences also
+work. Kokoro, Supertonic and both VibeVoice models aren't affected. Check yours: `python tools/release_check.py --only tts`.
 
 **Simplest fix: leave `voice` out.** On 0.1.39 a request with no `voice` works on 7 of the 9 voice models (each uses
 its default voice); only Qwen3-TTS Base (clone only) and Qwen3-TTS VoiceDesign (needs `instruct`) refuse it.
