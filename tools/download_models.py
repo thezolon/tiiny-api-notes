@@ -36,12 +36,16 @@ def status(t, mid):
 
 def download(t, mid, size, timeout):
     """Start the download on the device and wait until it says downloaded. True when it finished."""
-    print(f"{mid}: downloading {size:.1f} GB", flush=True)
-    code, res = t.call("POST", f"/api/v1/models/{mid}/download", b"", timeout=60)
-    if code >= 300:
-        print(f"  the device refused: HTTP {code} {res}", flush=True)
-        return False
     t0, last, state, started = time.time(), None, (None, None), False
+    if status(t, mid)[0] == "downloading":  # already under way (the app, or an earlier run): just wait for it
+        print(f"{mid}: already downloading ({size:.1f} GB), waiting for it", flush=True)
+        started = True
+    else:
+        print(f"{mid}: downloading {size:.1f} GB", flush=True)
+        code, res = t.call("POST", f"/api/v1/models/{mid}/download", b"", timeout=60)
+        if code >= 300:
+            print(f"  the device refused: HTTP {code} {res}", flush=True)
+            return False
     while time.time() - t0 < timeout:
         time.sleep(5)
         state = status(t, mid)
